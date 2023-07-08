@@ -57,6 +57,40 @@ class TelegramController {
       mensaje: "Usuario eliminado",
     });
   }
+
+  /**
+   * Mensaje de prueba entre el cliente y el bot
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @memberof TelegramController
+   */
+  public async comunicarBotCliente(req: Request, res: Response): Promise<void> {
+    const userId: any = req.query.fromId;
+
+    let res2: any = await telegramServices.enviarMensajeBotAUsuario(
+      userId,
+      "¡Hola! Soy el bot de OnlyGram"
+    );
+
+    if (res2.response && !res2.response.ok) {
+      res
+        .json({
+          mensaje: "Conexion erronea",
+          code: 400,
+        })
+        .status(res2.response.error_code);
+
+      return;
+    }
+
+    res.json({
+      mensaje: "Conexion exitosa",
+      code: 200,
+    });
+
+    return;
+  }
 }
 
 const telegramController = new TelegramController();

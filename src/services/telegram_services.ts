@@ -11,16 +11,17 @@ class TelegramServices {
    * @return {*}  {void}
    * @memberof TelegramServices
    */
-  public enviarMensajeBotAUsuario(
+  public async enviarMensajeBotAUsuario(
     userId: string | number,
     mensaje: string
-  ): void {
+  ): Promise<any> {
     const bot = new Telegraf("6262605361:AAH8Y9p4YRuP0BYH4nd-2Dro3Vv0DJDlQbk");
 
     try {
-      bot.telegram.sendMessage(userId, mensaje);
+      return await bot.telegram.sendMessage(userId, mensaje);
     } catch (error) {
       console.error(error);
+      return error;
     }
   }
 

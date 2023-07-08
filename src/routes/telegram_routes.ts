@@ -14,9 +14,23 @@ class TelegramRoutes {
    * @memberof TelegramRoutes
    */
   public config(): void {
-    this.router.get("/enviar-link", telegramController.enviarLink);
+    const telegramApi: string = "telegram";
 
-    this.router.post("/quitar-acceso", telegramController.quitarAcceso);
+    // GET
+    this.router.get(
+      `/${telegramApi}/enviar-link`,
+      telegramController.enviarLink
+    );
+    this.router.get(
+      `/${telegramApi}/comunicar-bot-cliente`,
+      telegramController.comunicarBotCliente
+    );
+
+    //POST
+    this.router.post(
+      `/${telegramApi}/quitar-acceso`,
+      telegramController.quitarAcceso
+    );
   }
 
   // Getters y Setters
