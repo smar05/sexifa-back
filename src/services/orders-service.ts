@@ -1,20 +1,28 @@
+import {
+  CollectionReference,
+  DocumentData,
+  DocumentReference,
+} from "firebase-admin/firestore";
 import { environment } from "../environment";
 import { Iorders } from "../interfaces/i-orders";
 import { FireStorageService } from "./firestorage-service";
 
-export class OrdersService {
+class OrdersService {
   private urlOrders: string = environment.urlCollections.orders;
+  private fireStorageService: FireStorageService;
 
-  constructor(private fireStorageService: FireStorageService) {}
+  constructor() {
+    this.fireStorageService = new FireStorageService();
+  }
 
   //------------ FireStorage---------------//
   /**
    * Se toma la informacion de la coleccion de Orders en Firebase
    *
-   * @return {*}  {Promise<any>}
+   * @return {*}  {CollectionReference<DocumentData>}
    * @memberof OrdersService
    */
-  public getDataFS(): Promise<any> {
+  public getDataFS(): CollectionReference<DocumentData> {
     return this.fireStorageService.getData(this.urlOrders);
   }
 
@@ -22,10 +30,10 @@ export class OrdersService {
    * Tomar un documento de Orders
    *
    * @param {string} doc
-   * @return {*}  {Promise<any>}
+   * @return {*}  {DocumentReference<DocumentData>}
    * @memberof OrdersService
    */
-  public getItemFS(doc: string): Promise<any> {
+  public getItemFS(doc: string): DocumentReference<DocumentData> {
     return this.fireStorageService.getItem(this.urlOrders, doc);
   }
 
@@ -65,3 +73,7 @@ export class OrdersService {
 
   //------------ FireStorage---------------//
 }
+
+const ordersServices = new OrdersService();
+
+export default ordersServices;

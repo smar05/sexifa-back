@@ -1,3 +1,8 @@
+import {
+  CollectionReference,
+  DocumentData,
+  DocumentReference,
+} from "firebase-admin/firestore";
 import db from "../firebase";
 
 export class FireStorageService {
@@ -7,11 +12,11 @@ export class FireStorageService {
    * Traer datos de una coleccion
    *
    * @param {string} collection
-   * @return {*}  {Promise<any>}
+   * @return {*}  {CollectionReference}
    * @memberof FireStorageService
    */
-  public getData(collection: string): Promise<any> {
-    return db.collection(collection).get();
+  public getData(collection: string): CollectionReference<DocumentData> {
+    return db.collection(collection);
   }
 
   /**
@@ -19,11 +24,14 @@ export class FireStorageService {
    *
    * @param {string} collection
    * @param {string} doc
-   * @return {*}  {Promise<any>}
+   * @return {*}  {DocumentReference}
    * @memberof FireStorageService
    */
-  public getItem(collection: string, doc: string): Promise<any> {
-    return db.collection(collection).doc(doc).get();
+  public getItem(
+    collection: string,
+    doc: string
+  ): DocumentReference<DocumentData> {
+    return db.collection(collection).doc(doc);
   }
 
   /**
