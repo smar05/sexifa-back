@@ -150,14 +150,62 @@ class TelegramController {
    * @param {Response} res
    * @memberof TelegramController
    */
-  public quitarAcceso(req: Request, res: Response): void {
-    const chatId = req.body.chatId;
-    const userId = req.body.fromId;
+  public async quitarAcceso(req: Request, res: Response): Promise<void> {
+    // Fecha actual
+    const fecha: string | any = req.query.fecha;
 
-    telegramServices.banChatMember(chatId, userId, 366);
+    // Subscripciones ya para finalziar
+    let subscripciones: Isubscriptions[] = (
+      await subscripcionsServices
+        .getDataFS()
+        .where("endTime", "<=", fecha)
+        .get()
+    ).docs.map((r) => {
+      let s: Isubscriptions | any = r.data();
+      s.id = r.id;
+      return s;
+    });
+
+    for (let subscription of subscripciones) {
+      let resUser: any = (
+        await userServices
+          .getDataFS()
+          .where("id", "==", subscription.userId)
+          .get()
+      ).docs[0];
+      let user: Iuser = resUser.data();
+      let resModel: any = await modelsServices
+        .getItemFS(subscription.modelId)
+        .get();
+      let model: Imodels = resModel.data();
+      model.id = resModel.id;
+
+      if (user.chatId && model.groupId) {
+        // Se remueve el acceso del usuario al grupo
+        telegramServices.banChatMember(model.groupId, user.chatId, 366);
+      } else {
+        continue;
+      }
+
+      // Se cambia el estado de la subscripcion
+      subscription.status = StatusSubscriptionsEnum.FINALIZADO;
+
+      let idSubscription: string | any = subscription.id;
+      let dataSubscription: Isubscriptions = subscription;
+      delete dataSubscription.id;
+
+      telegramServices.enviarMensajeBotAUsuario(
+        user.chatId,
+        `Ha finalizado su subscripción al grupo: ${model.name}`
+      );
+      await subscripcionsServices.patchDataFS(
+        idSubscription || "",
+        dataSubscription
+      );
+    }
 
     res.json({
-      mensaje: "Usuario eliminado",
+      mensaje: "Usuarios eliminados",
     });
   }
 
