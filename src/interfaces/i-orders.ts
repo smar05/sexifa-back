@@ -1,5 +1,5 @@
 export interface Iorders {
-  id?: number;
+  id?: string;
   date_created: string;
   ids_subscriptions: string[];
   userId: string;

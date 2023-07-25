@@ -86,8 +86,10 @@ class TelegramController {
     // Generamos los links de acceso a los grupos
     let links: Map<string, string> = new Map(); // Modelo nombre - link
 
-    // Calcular el tiempo de expiración en una hora del link
-    const expireDate = Math.floor(Date.now() / 1000) + 60; //3600;
+    // Calcular el tiempo de expiración en un dia del link
+    let fechaCompra: Date = new Date(order.date_created);
+    fechaCompra.setDate(fechaCompra.getDate() + 1); // Un dia
+    const expireDate: number = fechaCompra.getTime();
 
     for (const model of models) {
       // Habilitar al usuario al chat
@@ -110,8 +112,30 @@ class TelegramController {
       mensajeBot += `Grupo: ${key}\nLink de Acceso: ${links.get(key)}\n\n`;
     }
 
+    mensajeBot += `Los links vencen a las: ${new Date(
+      expireDate
+    ).toString()}\n\n`;
+
     // El bot envia el link al usuario
     telegramServices.enviarMensajeBotAUsuario(user.chatId, mensajeBot);
+
+    // Se cambia el estado de las subscripcines
+    for (let subscription of subscriptionsOrder) {
+      subscription.status = StatusSubscriptionsEnum.ACTIVO;
+      if (subscription.id) {
+        let id: string = subscription.id;
+        delete subscription.id;
+        await subscripcionsServices.patchDataFS(id, subscription);
+      }
+    }
+
+    // Se cambia el estado de la orden
+    order.status = StatusOrdersEnum.CERRADO;
+    if (order.id) {
+      let id: string = order.id;
+      delete order.id;
+      await ordersServices.patchDataFS(id, order);
+    }
 
     res.json({
       mensaje: "Link generado",
