@@ -159,12 +159,15 @@ class TelegramController {
       await subscripcionsServices
         .getDataFS()
         .where("endTime", "<=", fecha)
+        .where("status", "==", StatusSubscriptionsEnum.ACTIVO)
         .get()
     ).docs.map((r) => {
       let s: Isubscriptions | any = r.data();
       s.id = r.id;
       return s;
     });
+
+    let subscripcionesCanceladas: string[] = [];
 
     for (let subscription of subscripciones) {
       let resUser: any = (
@@ -198,6 +201,9 @@ class TelegramController {
         user.chatId,
         `Ha finalizado su subscripción al grupo: ${model.name}`
       );
+
+      subscripcionesCanceladas.push(idSubscription);
+
       await subscripcionsServices.patchDataFS(
         idSubscription || "",
         dataSubscription
@@ -206,6 +212,7 @@ class TelegramController {
 
     res.json({
       mensaje: "Usuarios eliminados",
+      subscripcionesCanceladas,
     });
   }
 
