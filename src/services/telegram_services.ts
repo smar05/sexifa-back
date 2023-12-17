@@ -15,7 +15,7 @@ class TelegramServices {
     userId: string | number,
     mensaje: string
   ): Promise<any> {
-    const bot = new Telegraf("6262605361:AAH8Y9p4YRuP0BYH4nd-2Dro3Vv0DJDlQbk");
+    const bot = new Telegraf("6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw");
 
     try {
       return await bot.telegram.sendMessage(userId, mensaje);
@@ -34,7 +34,7 @@ class TelegramServices {
    * @memberof TelegramServices
    */
   public unbanChatMember(chatId: string | number, userId: number): void {
-    const bot = new Telegraf("6262605361:AAH8Y9p4YRuP0BYH4nd-2Dro3Vv0DJDlQbk");
+    const bot = new Telegraf("6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw");
 
     try {
       bot.telegram.unbanChatMember(chatId, userId);
@@ -57,7 +57,7 @@ class TelegramServices {
     expireDate: number,
     memberLimit: number
   ): Promise<string> {
-    const bot = new Telegraf("6262605361:AAH8Y9p4YRuP0BYH4nd-2Dro3Vv0DJDlQbk");
+    const bot = new Telegraf("6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw");
 
     const resLink = await bot.telegram.createChatInviteLink(chatId, {
       member_limit: memberLimit,
@@ -80,7 +80,7 @@ class TelegramServices {
     userId: number,
     tiempoBaneado: number
   ): void {
-    const bot = new Telegraf("6262605361:AAH8Y9p4YRuP0BYH4nd-2Dro3Vv0DJDlQbk");
+    const bot = new Telegraf("6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw");
 
     try {
       // Revocar el acceso del usuario al grupo
