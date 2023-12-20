@@ -1,4 +1,5 @@
 import { Telegraf } from "telegraf";
+import { environment } from "../../environment";
 
 class TelegramServices {
   constructor() {}
@@ -15,7 +16,7 @@ class TelegramServices {
     userId: string | number,
     mensaje: string
   ): Promise<any> {
-    const bot = new Telegraf("6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw");
+    const bot = new Telegraf(environment.tokenTelegraf);
 
     try {
       return await bot.telegram.sendMessage(userId, mensaje);
@@ -34,7 +35,7 @@ class TelegramServices {
    * @memberof TelegramServices
    */
   public unbanChatMember(chatId: string | number, userId: number): void {
-    const bot = new Telegraf("6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw");
+    const bot = new Telegraf(environment.tokenTelegraf);
 
     try {
       bot.telegram.unbanChatMember(chatId, userId);
@@ -57,7 +58,7 @@ class TelegramServices {
     expireDate: number,
     memberLimit: number
   ): Promise<string> {
-    const bot = new Telegraf("6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw");
+    const bot = new Telegraf(environment.tokenTelegraf);
 
     const resLink = await bot.telegram.createChatInviteLink(chatId, {
       member_limit: memberLimit,
@@ -80,7 +81,7 @@ class TelegramServices {
     userId: number,
     tiempoBaneado: number
   ): void {
-    const bot = new Telegraf("6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw");
+    const bot = new Telegraf(environment.tokenTelegraf);
 
     try {
       // Revocar el acceso del usuario al grupo
