@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import telegramRoutes from "./routes/telegram_routes";
+import { environment } from "../environment";
 
 class Server {
   private app: Application;
@@ -23,7 +24,7 @@ class Server {
    * @memberof Server
    */
   public config(): void {
-    this.app.set("port", process.env.PORT || 8080); // Se establece el puerto para el back
+    this.app.set("port", environment.port || 8080); // Se establece el puerto para el back
     this.app.use(morgan("dev")); // Para mostrar por consola las peticiones http
     this.app.use(cors()); // Para que el front pueda pedir los datos al back
     this.app.use(express.json()); // Aceptar formato JSON

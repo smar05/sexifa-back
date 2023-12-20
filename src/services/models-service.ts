@@ -3,7 +3,7 @@ import {
   DocumentData,
   DocumentReference,
 } from "firebase-admin/firestore";
-import { environment } from "../environment";
+import { environment } from "../../environment";
 import { Imodels } from "../interfaces/i-models";
 import { FireStorageService } from "./firestorage-service";
 

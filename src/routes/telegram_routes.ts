@@ -1,5 +1,6 @@
 import { Router } from "express";
 import telegramController from "../controllers/telegram_controller";
+import { environment } from "../../environment";
 
 class TelegramRoutes {
   private router: Router = Router();
@@ -14,7 +15,7 @@ class TelegramRoutes {
    * @memberof TelegramRoutes
    */
   public config(): void {
-    const telegramApi: string = "telegram";
+    const telegramApi: string = environment.urlTelegramApi;
 
     // GET
     this.router.get(
