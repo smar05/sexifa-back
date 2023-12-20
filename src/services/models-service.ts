@@ -12,6 +12,9 @@ class ModelsService {
   private fireStorageService: FireStorageService;
 
   constructor() {
+    console.log(
+      "🚀 ~ file: models-service.ts ~ ModelsService ~ constructor: Inicia"
+    );
     this.fireStorageService = new FireStorageService();
   }
 
@@ -23,6 +26,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public getDataFS(): CollectionReference<DocumentData> {
+    console.log(
+      "🚀 ~ file: models-service.ts ~ ModelsService ~ getDataFS: Inicia"
+    );
     return this.fireStorageService.getData(this.urlModels);
   }
 
@@ -34,6 +40,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
+    console.log(
+      `🚀 ~ file: models-service.ts ~ ModelsService ~ getItemFS: Inicia Doc: ${doc}`
+    );
     return this.fireStorageService.getItem(this.urlModels, doc);
   }
 
@@ -45,6 +54,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public postDataFS(data: Imodels): Promise<any> {
+    console.log(
+      "🚀 ~ file: models-service.ts ~ ModelsService ~ postDataFS: Inicia"
+    );
     return this.fireStorageService.post(this.urlModels, data);
   }
 
@@ -57,6 +69,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public patchDataFS(doc: string, data: Imodels): Promise<any> {
+    console.log(
+      `🚀 ~ file: models-service.ts ~ ModelsService ~ patchDataFS: Inicia Doc: ${doc}`
+    );
     return this.fireStorageService.patch(this.urlModels, doc, data);
   }
 
@@ -68,6 +83,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public deleteDataFS(doc: string): Promise<any> {
+    console.log(
+      `🚀 ~ file: models-service.ts ~ ModelsService ~ deleteDataFS: Inicia Doc: ${doc}`
+    );
     return this.fireStorageService.delete(this.urlModels, doc);
   }
 

@@ -13,7 +13,11 @@ import { Iuser } from "../interfaces/i-user";
 import { DocumentSnapshot } from "firebase-admin/firestore";
 
 class TelegramController {
-  constructor() {}
+  constructor() {
+    console.log(
+      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ constructor: Inicia"
+    );
+  }
 
   /**
    * Enviar link de acceso
@@ -24,18 +28,32 @@ class TelegramController {
    * @memberof TelegramController
    */
   public async enviarLink(req: Request, res: Response): Promise<void> {
+    console.log(
+      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: Inicia"
+    );
     const orderId: any = req.query.orderId;
 
     // Obtenemos los datos de la orden
-    let res1: DocumentSnapshot | any = await ordersServices
-      .getItemFS(orderId)
-      .get();
+    let res1: DocumentSnapshot | any = null;
+
+    try {
+      res1 = await ordersServices.getItemFS(orderId).get();
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          error: `Error interno del servidor al consultar la base de datos para la orden ${orderId}`,
+        });
+    }
 
     let order: Iorders = res1.data();
     order.id = res1.id;
 
     // Si no esta en estado pagada
     if (order.status != StatusOrdersEnum.PAGADO) {
+      console.log(
+        `🚀 ~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: La orden ${order.id} no ha sido pagada`
+      );
       res.status(500).json({
         mensaje: "La orden no ha sido pagada",
       });
@@ -43,9 +61,19 @@ class TelegramController {
       return;
     }
 
-    let res4: any = (
-      await userServices.getDataFS().where("id", "==", order.userId).get()
-    ).docs[0];
+    let res4: any = null;
+
+    try {
+      res4 = (
+        await userServices.getDataFS().where("id", "==", order.userId).get()
+      ).docs[0];
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          error: `Error interno del servidor al consultar la base de datos para el usuario ${order.userId}`,
+        });
+    }
 
     let user: Iuser = res4.data();
     user.id = res4.id;
@@ -56,9 +84,17 @@ class TelegramController {
     let subscriptionsOrder: Isubscriptions[] = [];
 
     for (const idSubscription of order.ids_subscriptions) {
-      let res2: DocumentSnapshot | any = await subscripcionsServices
-        .getItemFS(idSubscription)
-        .get();
+      let res2: DocumentSnapshot | any = null;
+
+      try {
+        res2 = await subscripcionsServices.getItemFS(idSubscription).get();
+      } catch (error) {
+        res
+          .status(500)
+          .json({
+            error: `Error interno del servidor al consultar la base de datos para la subscripcion ${idSubscription}`,
+          });
+      }
 
       let subscription: Isubscriptions = res2.data();
       subscription.id = res2.id;
@@ -71,9 +107,18 @@ class TelegramController {
 
     for (const subscription of subscriptionsOrder) {
       if (subscription.status == StatusSubscriptionsEnum.PAGADO) {
-        let res3: DocumentSnapshot | any = await modelsServices
-          .getItemFS(subscription.modelId)
-          .get();
+        let res3: DocumentSnapshot | any = null;
+
+        try {
+          res3 = await modelsServices.getItemFS(subscription.modelId).get();
+        } catch (error) {
+          res
+            .status(500)
+            .json({
+              error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
+            });
+        }
+
         let model: Imodels = res3.data();
         model.id = res3.id;
 
@@ -96,11 +141,21 @@ class TelegramController {
       telegramServices.unbanChatMember(model.groupId, user.chatId);
 
       // Crear el link
-      let inviteLink: string = await telegramServices.createChatInviteLink(
-        model.groupId,
-        expireDate,
-        1
-      );
+      let inviteLink: string = "";
+
+      try {
+        inviteLink = await telegramServices.createChatInviteLink(
+          model.groupId,
+          expireDate,
+          1
+        );
+      } catch (error) {
+        res
+          .status(500)
+          .json({
+            error: `Error interno del servidor al crear el link de invitacion para el grupo ${model.groupId}`,
+          });
+      }
 
       links.set(model.name, inviteLink);
     }
@@ -125,7 +180,15 @@ class TelegramController {
       if (subscription.id) {
         let id: string = subscription.id;
         delete subscription.id;
-        await subscripcionsServices.patchDataFS(id, subscription);
+        try {
+          await subscripcionsServices.patchDataFS(id, subscription);
+        } catch (error) {
+          res
+            .status(500)
+            .json({
+              error: `Error interno del servidor al actualizar la subscripcion ${subscription.id}`,
+            });
+        }
       }
     }
 
@@ -134,7 +197,16 @@ class TelegramController {
     if (order.id) {
       let id: string = order.id;
       delete order.id;
-      await ordersServices.patchDataFS(id, order);
+
+      try {
+        await ordersServices.patchDataFS(id, order);
+      } catch (error) {
+        res
+          .status(500)
+          .json({
+            error: `Error interno del servidor al actualizar la orden ${id}`,
+          });
+      }
     }
 
     res.json({
@@ -151,35 +223,69 @@ class TelegramController {
    * @memberof TelegramController
    */
   public async quitarAcceso(req: Request, res: Response): Promise<void> {
+    console.log(
+      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ quitarAcceso: Inicia"
+    );
+
     // Fecha actual
     const fecha: string | any = req.query.fecha;
 
     // Subscripciones ya para finalziar
-    let subscripciones: Isubscriptions[] = (
-      await subscripcionsServices
-        .getDataFS()
-        .where("endTime", "<=", fecha)
-        .where("status", "==", StatusSubscriptionsEnum.ACTIVO)
-        .get()
-    ).docs.map((r) => {
-      let s: Isubscriptions | any = r.data();
-      s.id = r.id;
-      return s;
-    });
+    let subscripciones: Isubscriptions[] = [];
+
+    try {
+      subscripciones = (
+        await subscripcionsServices
+          .getDataFS()
+          .where("endTime", "<=", fecha)
+          .where("status", "==", StatusSubscriptionsEnum.ACTIVO)
+          .get()
+      ).docs.map((r) => {
+        let s: Isubscriptions | any = r.data();
+        s.id = r.id;
+        return s;
+      });
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          error: `Error interno del servidor al consultar la base de datos para las subscripciones`,
+        });
+    }
 
     let subscripcionesCanceladas: string[] = [];
 
     for (let subscription of subscripciones) {
-      let resUser: any = (
-        await userServices
-          .getDataFS()
-          .where("id", "==", subscription.userId)
-          .get()
-      ).docs[0];
+      let resUser: any = null;
+
+      try {
+        resUser = (
+          await userServices
+            .getDataFS()
+            .where("id", "==", subscription.userId)
+            .get()
+        ).docs[0];
+      } catch (error) {
+        res
+          .status(500)
+          .json({
+            error: `Error interno del servidor al consultar la base de datos para el usuario ${subscription.userId}`,
+          });
+      }
+
       let user: Iuser = resUser.data();
-      let resModel: any = await modelsServices
-        .getItemFS(subscription.modelId)
-        .get();
+      let resModel: any = null;
+
+      try {
+        resModel = await modelsServices.getItemFS(subscription.modelId).get();
+      } catch (error) {
+        res
+          .status(500)
+          .json({
+            error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
+          });
+      }
+
       let model: Imodels = resModel.data();
       model.id = resModel.id;
 
@@ -204,10 +310,18 @@ class TelegramController {
 
       subscripcionesCanceladas.push(idSubscription);
 
-      await subscripcionsServices.patchDataFS(
-        idSubscription || "",
-        dataSubscription
-      );
+      try {
+        await subscripcionsServices.patchDataFS(
+          idSubscription || "",
+          dataSubscription
+        );
+      } catch (error) {
+        res
+          .status(500)
+          .json({
+            error: `Error interno del servidor al actualizar la base de datos para la subscripcion ${idSubscription}`,
+          });
+      }
     }
 
     res.json({
@@ -224,12 +338,25 @@ class TelegramController {
    * @memberof TelegramController
    */
   public async comunicarBotCliente(req: Request, res: Response): Promise<void> {
+    console.log(
+      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ comunicarBotCliente: Inicia"
+    );
     const userId: any = req.query.fromId;
 
-    let res2: any = await telegramServices.enviarMensajeBotAUsuario(
-      userId,
-      "¡Hola! Soy el bot de OnlyGram"
-    );
+    let res2: any = null;
+
+    try {
+      res2 = await telegramServices.enviarMensajeBotAUsuario(
+        userId,
+        "¡Hola! Soy el bot de OnlyGram"
+      );
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
+        });
+    }
 
     if (res2.response && !res2.response.ok) {
       res

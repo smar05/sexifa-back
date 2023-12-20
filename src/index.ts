@@ -11,6 +11,7 @@ class Server {
   private bodyParser = require("body-parser");
 
   constructor() {
+    console.log("🚀 ~ file: index.ts ~ Server ~ constructor: Inicia");
     this.app = express();
     this.app.use(this.bodyParser.json());
 
@@ -25,6 +26,7 @@ class Server {
    * @memberof Server
    */
   public config(): void {
+    console.log("🚀 ~ file: index.ts ~ Server ~ config: Inicia");
     this.app.set("port", environment.port || 8080); // Se establece el puerto para el back
     this.app.use(morgan("dev")); // Para mostrar por consola las peticiones http
     this.app.use(cors()); // Para que el front pueda pedir los datos al back
@@ -72,6 +74,7 @@ class Server {
    * @memberof Server
    */
   public routes(): void {
+    console.log("🚀 ~ file: index.ts ~ Server ~ routes: Inicia");
     this.app.use(`${this.API}`, telegramRoutes);
   }
 
@@ -81,6 +84,7 @@ class Server {
    * @memberof Server
    */
   public start(): void {
+    console.log("🚀 ~ file: index.ts ~ Server ~ start: Inicia");
     this.app.listen(this.app.get("port"), () => {
       console.log("Server on port: " + this.app.get("port"));
     });

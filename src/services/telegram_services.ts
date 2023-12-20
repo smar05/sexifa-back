@@ -2,7 +2,11 @@ import { Telegraf } from "telegraf";
 import { environment } from "../environment";
 
 class TelegramServices {
-  constructor() {}
+  constructor() {
+    console.log(
+      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ constructor: Inicia"
+    );
+  }
 
   /**
    * Enviar un mensaje del bot a un usuario
@@ -16,6 +20,10 @@ class TelegramServices {
     userId: string | number,
     mensaje: string
   ): Promise<any> {
+    console.log(
+      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ enviarMensajeBotAUsuario: Inicia para el userId: " +
+        userId
+    );
     const bot = new Telegraf(environment.tokenTelegraf);
 
     try {
@@ -35,6 +43,10 @@ class TelegramServices {
    * @memberof TelegramServices
    */
   public unbanChatMember(chatId: string | number, userId: number): void {
+    console.log(
+      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ unbanChatMember: Inicia para el chatId: " +
+        chatId
+    );
     const bot = new Telegraf(environment.tokenTelegraf);
 
     try {
@@ -58,6 +70,10 @@ class TelegramServices {
     expireDate: number,
     memberLimit: number
   ): Promise<string> {
+    console.log(
+      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ createChatInviteLink: Inicia para el chatId: " +
+        chatId
+    );
     const bot = new Telegraf(environment.tokenTelegraf);
 
     const resLink = await bot.telegram.createChatInviteLink(chatId, {
@@ -81,6 +97,11 @@ class TelegramServices {
     userId: number,
     tiempoBaneado: number
   ): void {
+    console.log(
+      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ banChatMember: Inicia para el chatId: " +
+        chatId
+    );
+
     const bot = new Telegraf(environment.tokenTelegraf);
 
     try {

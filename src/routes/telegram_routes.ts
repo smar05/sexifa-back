@@ -6,6 +6,9 @@ class TelegramRoutes {
   private router: Router = Router();
 
   constructor() {
+    console.log(
+      "🚀 ~ file: telegram_routes.ts0 ~ TelegramRoutes ~ constructor: Inicia"
+    );
     this.config();
   }
 
@@ -15,6 +18,9 @@ class TelegramRoutes {
    * @memberof TelegramRoutes
    */
   public config(): void {
+    console.log(
+      "🚀 ~ file: telegram_routes.ts ~ TelegramRoutes ~ config: Inicia"
+    );
     const telegramApi: string = environment.urlTelegramApi;
 
     // GET
@@ -36,6 +42,9 @@ class TelegramRoutes {
 
   // Getters y Setters
   public getRouter(): Router {
+    console.log(
+      "🚀 ~ file: telegram_routes.ts ~ TelegramRoutes ~ getRouter: Inicia"
+    );
     return this.router;
   }
 }

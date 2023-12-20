@@ -6,7 +6,11 @@ import {
 import db from "../firebase";
 
 export class FireStorageService {
-  constructor() {}
+  constructor() {
+    console.log(
+      "🚀 ~ file: firestorage-service.ts ~ FireStorageService ~ constructor: Inicia"
+    );
+  }
 
   /**
    * Traer datos de una coleccion
@@ -16,6 +20,9 @@ export class FireStorageService {
    * @memberof FireStorageService
    */
   public getData(collection: string): CollectionReference<DocumentData> {
+    console.log(
+      "🚀 ~ file: firestorage-service.ts ~ FireStorageService ~ getData: Inicia"
+    );
     return db.collection(collection);
   }
 
@@ -31,6 +38,9 @@ export class FireStorageService {
     collection: string,
     doc: string
   ): DocumentReference<DocumentData> {
+    console.log(
+      `🚀 ~ file: firestorage-service.ts ~ FireStorageService ~ getItem: Inicia Coleccion: ${collection} Doc: ${doc}`
+    );
     return db.collection(collection).doc(doc);
   }
 
@@ -43,6 +53,9 @@ export class FireStorageService {
    * @memberof FireStorageService
    */
   public post(collection: string, data: Object): Promise<any> {
+    console.log(
+      `🚀 ~ file: firestorage-service.ts ~ FireStorageService ~ post: Inicia Coleccion: ${collection}`
+    );
     return db.collection(collection).add(data);
   }
 
@@ -56,6 +69,9 @@ export class FireStorageService {
    * @memberof FireStorageService
    */
   public patch(collection: string, doc: string, data: Object): Promise<any> {
+    console.log(
+      `🚀 ~ file: firestorage-service.ts ~ FireStorageService ~ patch: Inicia Coleccion: ${collection} Doc: ${doc}`
+    );
     return db.collection(collection).doc(doc).set(data);
   }
 
@@ -68,6 +84,9 @@ export class FireStorageService {
    * @memberof FireStorageService
    */
   public delete(collection: string, doc: string): Promise<any> {
+    console.log(
+      `🚀 ~ file: firestorage-service.ts ~ FireStorageService ~ delete: Inicia Coleccion: ${collection} Doc: ${doc}`
+    );
     return db.collection(collection).doc(doc).delete();
   }
 }
