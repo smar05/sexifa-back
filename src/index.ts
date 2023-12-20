@@ -2,7 +2,7 @@ import express, { Application } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import telegramRoutes from "./routes/telegram_routes";
-import { environment } from "../environment";
+import { environment } from "./environment";
 
 class Server {
   private app: Application;

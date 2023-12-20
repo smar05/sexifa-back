@@ -1,5 +1,5 @@
 import { Telegraf } from "telegraf";
-import { environment } from "../../environment";
+import { environment } from "../environment";
 
 class TelegramServices {
   constructor() {}
