@@ -1,8 +1,9 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import telegramRoutes from "./routes/telegram_routes";
-import { environment } from "../environment";
+import { environment } from "./environment";
+import admin from "firebase-admin";
 
 class Server {
   private app: Application;
@@ -29,6 +30,40 @@ class Server {
     this.app.use(cors()); // Para que el front pueda pedir los datos al back
     this.app.use(express.json()); // Aceptar formato JSON
     this.app.use(express.urlencoded({ extended: false }));
+
+    this.app.use(this.verifyToken);
+  }
+
+  /**
+   * Middleware para verificar el token en cada solicitud
+   *
+   * @private
+   * @param {Request} req
+   * @param {Response} res
+   * @param {*} next
+   * @memberof Server
+   */
+  private verifyToken(req: Request | any, res: Response, next: any): void {
+    console.log("🚀 ~ file: index.ts ~ Server ~ verifyToken: Inicia");
+
+    const token: string = req.query.auth as string;
+
+    admin
+      .auth()
+      .verifyIdToken(token)
+      .then((decodedToken) => {
+        console.log(
+          "🚀 ~ file: index.ts ~ Server ~ verifyToken: Token verificado"
+        );
+        req.user = decodedToken;
+        next();
+      })
+      .catch((error) => {
+        console.error(
+          "🚀 ~ file: index.ts ~ Server ~ verifyToken: Token invalido"
+        );
+        res.status(401).json({ error: "Token inválido" });
+      });
   }
 
   /**

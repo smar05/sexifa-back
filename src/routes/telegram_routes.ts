@@ -1,6 +1,6 @@
 import { Router } from "express";
 import telegramController from "../controllers/telegram_controller";
-import { environment } from "../../environment";
+import { environment } from "../environment";
 
 class TelegramRoutes {
   private router: Router = Router();

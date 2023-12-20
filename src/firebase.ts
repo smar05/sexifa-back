@@ -1,7 +1,7 @@
 import admin from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { environment } from "../environment";
+import { environment } from "./environment";
 const serviceAccount: any = environment.firebase;
 
 initializeApp({
