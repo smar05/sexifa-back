@@ -11,6 +11,8 @@ import { Imodels } from "../interfaces/i-models";
 import userServices from "../services/user-service";
 import { Iuser } from "../interfaces/i-user";
 import { DocumentSnapshot } from "firebase-admin/firestore";
+import { JoiMiddlewareService } from "../services/joiMiddleware-service";
+import Joi from "joi";
 
 class TelegramController {
   constructor() {
@@ -31,6 +33,26 @@ class TelegramController {
     console.log(
       "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: Inicia"
     );
+
+    // Validacion de datos
+    let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
+      {
+        orderId: Joi.string().required(),
+      },
+      req.query
+    );
+
+    if (resultadoValidacionError) {
+      console.log(
+        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: Error en la validacion con Joi: ",
+        resultadoValidacionError
+      );
+      // Si hay errores de validación, enviar una respuesta de error
+      return res
+        .status(400)
+        .json({ error: resultadoValidacionError.details[0].message }) as any;
+    }
+
     const orderId: any = req.query.orderId;
 
     // Obtenemos los datos de la orden
@@ -39,11 +61,9 @@ class TelegramController {
     try {
       res1 = await ordersServices.getItemFS(orderId).get();
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          error: `Error interno del servidor al consultar la base de datos para la orden ${orderId}`,
-        });
+      res.status(500).json({
+        error: `Error interno del servidor al consultar la base de datos para la orden ${orderId}`,
+      });
     }
 
     let order: Iorders = res1.data();
@@ -68,11 +88,9 @@ class TelegramController {
         await userServices.getDataFS().where("id", "==", order.userId).get()
       ).docs[0];
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          error: `Error interno del servidor al consultar la base de datos para el usuario ${order.userId}`,
-        });
+      res.status(500).json({
+        error: `Error interno del servidor al consultar la base de datos para el usuario ${order.userId}`,
+      });
     }
 
     let user: Iuser = res4.data();
@@ -89,11 +107,9 @@ class TelegramController {
       try {
         res2 = await subscripcionsServices.getItemFS(idSubscription).get();
       } catch (error) {
-        res
-          .status(500)
-          .json({
-            error: `Error interno del servidor al consultar la base de datos para la subscripcion ${idSubscription}`,
-          });
+        res.status(500).json({
+          error: `Error interno del servidor al consultar la base de datos para la subscripcion ${idSubscription}`,
+        });
       }
 
       let subscription: Isubscriptions = res2.data();
@@ -112,11 +128,9 @@ class TelegramController {
         try {
           res3 = await modelsServices.getItemFS(subscription.modelId).get();
         } catch (error) {
-          res
-            .status(500)
-            .json({
-              error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
-            });
+          res.status(500).json({
+            error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
+          });
         }
 
         let model: Imodels = res3.data();
@@ -150,11 +164,9 @@ class TelegramController {
           1
         );
       } catch (error) {
-        res
-          .status(500)
-          .json({
-            error: `Error interno del servidor al crear el link de invitacion para el grupo ${model.groupId}`,
-          });
+        res.status(500).json({
+          error: `Error interno del servidor al crear el link de invitacion para el grupo ${model.groupId}`,
+        });
       }
 
       links.set(model.name, inviteLink);
@@ -183,11 +195,9 @@ class TelegramController {
         try {
           await subscripcionsServices.patchDataFS(id, subscription);
         } catch (error) {
-          res
-            .status(500)
-            .json({
-              error: `Error interno del servidor al actualizar la subscripcion ${subscription.id}`,
-            });
+          res.status(500).json({
+            error: `Error interno del servidor al actualizar la subscripcion ${subscription.id}`,
+          });
         }
       }
     }
@@ -201,11 +211,9 @@ class TelegramController {
       try {
         await ordersServices.patchDataFS(id, order);
       } catch (error) {
-        res
-          .status(500)
-          .json({
-            error: `Error interno del servidor al actualizar la orden ${id}`,
-          });
+        res.status(500).json({
+          error: `Error interno del servidor al actualizar la orden ${id}`,
+        });
       }
     }
 
@@ -227,6 +235,25 @@ class TelegramController {
       "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ quitarAcceso: Inicia"
     );
 
+    // Validacion de datos
+    let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
+      {
+        fecha: Joi.string().required(),
+      },
+      req.query
+    );
+
+    if (resultadoValidacionError) {
+      console.log(
+        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ quitarAcceso: Error en la validacion con Joi: ",
+        resultadoValidacionError
+      );
+      // Si hay errores de validación, enviar una respuesta de error
+      return res
+        .status(400)
+        .json({ error: resultadoValidacionError.details[0].message }) as any;
+    }
+
     // Fecha actual
     const fecha: string | any = req.query.fecha;
 
@@ -246,11 +273,9 @@ class TelegramController {
         return s;
       });
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          error: `Error interno del servidor al consultar la base de datos para las subscripciones`,
-        });
+      res.status(500).json({
+        error: `Error interno del servidor al consultar la base de datos para las subscripciones`,
+      });
     }
 
     let subscripcionesCanceladas: string[] = [];
@@ -266,11 +291,9 @@ class TelegramController {
             .get()
         ).docs[0];
       } catch (error) {
-        res
-          .status(500)
-          .json({
-            error: `Error interno del servidor al consultar la base de datos para el usuario ${subscription.userId}`,
-          });
+        res.status(500).json({
+          error: `Error interno del servidor al consultar la base de datos para el usuario ${subscription.userId}`,
+        });
       }
 
       let user: Iuser = resUser.data();
@@ -279,11 +302,9 @@ class TelegramController {
       try {
         resModel = await modelsServices.getItemFS(subscription.modelId).get();
       } catch (error) {
-        res
-          .status(500)
-          .json({
-            error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
-          });
+        res.status(500).json({
+          error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
+        });
       }
 
       let model: Imodels = resModel.data();
@@ -316,11 +337,9 @@ class TelegramController {
           dataSubscription
         );
       } catch (error) {
-        res
-          .status(500)
-          .json({
-            error: `Error interno del servidor al actualizar la base de datos para la subscripcion ${idSubscription}`,
-          });
+        res.status(500).json({
+          error: `Error interno del servidor al actualizar la base de datos para la subscripcion ${idSubscription}`,
+        });
       }
     }
 
@@ -341,6 +360,26 @@ class TelegramController {
     console.log(
       "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ comunicarBotCliente: Inicia"
     );
+
+    // Validacion de datos
+    let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
+      {
+        fromId: Joi.string().required(),
+      },
+      req.query
+    );
+
+    if (resultadoValidacionError) {
+      console.log(
+        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ comunicarBotCliente: Error en la validacion con Joi: ",
+        resultadoValidacionError
+      );
+      // Si hay errores de validación, enviar una respuesta de error
+      return res
+        .status(400)
+        .json({ error: resultadoValidacionError.details[0].message }) as any;
+    }
+
     const userId: any = req.query.fromId;
 
     let res2: any = null;
@@ -351,11 +390,9 @@ class TelegramController {
         "¡Hola! Soy el bot de OnlyGram"
       );
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
-        });
+      res.status(500).json({
+        error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
+      });
     }
 
     if (res2.response && !res2.response.ok) {
