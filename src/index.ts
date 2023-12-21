@@ -9,6 +9,11 @@ class Server {
   private app: Application;
   private API: string = "/api";
   private bodyParser = require("body-parser");
+  private corsOptions: { [key: string]: any } = {
+    origin: environment.frontUrl, // o '*' para permitir cualquier origen
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: false, // habilitar el intercambio de cookies entre el cliente y el servidor
+  };
 
   constructor() {
     console.log("🚀 ~ file: index.ts ~ Server ~ constructor: Inicia");
@@ -29,7 +34,7 @@ class Server {
     console.log("🚀 ~ file: index.ts ~ Server ~ config: Inicia");
     this.app.set("port", environment.port || 8080); // Se establece el puerto para el back
     this.app.use(morgan("dev")); // Para mostrar por consola las peticiones http
-    this.app.use(cors()); // Para que el front pueda pedir los datos al back
+    this.app.use(cors(this.corsOptions)); // Para que el front pueda pedir los datos al back
     this.app.use(express.json()); // Aceptar formato JSON
     this.app.use(express.urlencoded({ extended: false }));
 
