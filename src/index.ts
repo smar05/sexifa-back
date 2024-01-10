@@ -4,6 +4,9 @@ import cors from "cors";
 import telegramRoutes from "./routes/telegram_routes";
 import { environment } from "./environment";
 import admin from "firebase-admin";
+import userServices from "./services/user-service";
+import { Iuser } from "./interfaces/i-user";
+import { UserStatusEnum } from "./enums/user-status-enum";
 
 class Server {
   private app: Application;
@@ -39,6 +42,7 @@ class Server {
     this.app.use(express.urlencoded({ extended: false }));
 
     this.app.use(this.verifyToken);
+    this.app.use(this.verifyUser);
   }
 
   /**
@@ -70,7 +74,75 @@ class Server {
           "🚀 ~ file: index.ts ~ Server ~ verifyToken: Token invalido"
         );
         res.status(401).json({ error: "Token inválido" });
+        return;
       });
+  }
+
+  /**
+   * Verificacion del usuario
+   *
+   * @private
+   * @param {(Request | any)} req
+   * @param {Response} res
+   * @param {*} next
+   * @return {*}  {Promise<void>}
+   * @memberof Server
+   */
+  private async verifyUser(
+    req: Request | any,
+    res: Response,
+    next: any
+  ): Promise<void> {
+    console.log("🚀 ~ file: index.ts: ~ Server ~ verifyUser: Inicia");
+    const userId: string = req.query.userId as string;
+
+    let resUser: any = {};
+    try {
+      console.error(
+        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Consulta del usuario " +
+          userId
+      );
+      resUser = (await userServices.getDataFS().where("id", "==", userId).get())
+        .docs[0];
+    } catch (error) {
+      console.error(
+        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario no encontrado"
+      );
+      res.status(401).json({ error: "Usuario no encontrado" });
+
+      return;
+    }
+
+    if (!resUser) {
+      console.error(
+        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario no encontrado"
+      );
+      res.status(401).json({ error: "Usuario no encontrado" });
+
+      return;
+    }
+
+    let user: Iuser = resUser.data();
+    user.id = user.id;
+
+    if (!user || !user.id || Object.keys(user).length === 0) {
+      console.error(
+        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario invalido"
+      );
+      res.status(401).json({ error: "Usuario invalido" });
+      return;
+    }
+
+    // Usuario no activo
+    if (user.status !== UserStatusEnum.ACTIVO) {
+      console.error(
+        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario no activo"
+      );
+      res.status(401).json({ error: "Usuario no activo" });
+      return;
+    }
+
+    next();
   }
 
   /**

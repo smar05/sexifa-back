@@ -18,6 +18,7 @@ export class JoiMiddlewareService {
     );
 
     camposAValidar.auth = Joi.string().required();
+    camposAValidar.userId = Joi.string().required();
 
     // Define el esquema de validación con Joi
     const schema = Joi.object(camposAValidar);
