@@ -1,5 +1,8 @@
 import { Telegraf } from "telegraf";
 import { environment } from "../environment";
+import { IBackLogs } from "../interfaces/i-back-logs";
+import backLogsServices from "./back-logs-service";
+import { variablesGlobales } from "../variables-globales";
 
 class TelegramServices {
   constructor() {
@@ -29,6 +32,21 @@ class TelegramServices {
     try {
       return await bot.telegram.sendMessage(userId, mensaje);
     } catch (error) {
+      let data: IBackLogs = {
+        userId: variablesGlobales.userId,
+        date: variablesGlobales.date,
+        log: `TelegramServices ~ enviarMensajeBotAUsuario ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
       console.error(error);
       return error;
     }
@@ -52,6 +70,21 @@ class TelegramServices {
     try {
       bot.telegram.unbanChatMember(chatId, userId);
     } catch (error) {
+      let data: IBackLogs = {
+        userId: variablesGlobales.userId,
+        date: variablesGlobales.date,
+        log: `TelegramServices ~ unbanChatMember ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
       console.error(error);
     }
   }
@@ -110,6 +143,21 @@ class TelegramServices {
         revoke_messages: false,
       });
     } catch (error) {
+      let data: IBackLogs = {
+        userId: variablesGlobales.userId,
+        date: variablesGlobales.date,
+        log: `TelegramServices ~ banChatMember ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
       console.error(error);
     }
   }

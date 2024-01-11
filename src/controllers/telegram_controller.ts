@@ -13,6 +13,8 @@ import { Iuser } from "../interfaces/i-user";
 import { DocumentSnapshot } from "firebase-admin/firestore";
 import { JoiMiddlewareService } from "../services/joiMiddleware-service";
 import Joi from "joi";
+import { IBackLogs } from "../interfaces/i-back-logs";
+import backLogsServices from "../services/back-logs-service";
 
 class TelegramController {
   constructor() {
@@ -61,6 +63,22 @@ class TelegramController {
     try {
       res1 = await ordersServices.getItemFS(orderId).get();
     } catch (error) {
+      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let data: IBackLogs = {
+        date: new Date(date),
+        userId,
+        log: `TelegramController ~ enviarLinkr ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para la orden ${orderId}`,
       });
@@ -88,6 +106,22 @@ class TelegramController {
         await userServices.getDataFS().where("id", "==", order.userId).get()
       ).docs[0];
     } catch (error) {
+      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let data: IBackLogs = {
+        date: new Date(date),
+        userId,
+        log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para el usuario ${order.userId}`,
       });
@@ -107,6 +141,23 @@ class TelegramController {
       try {
         res2 = await subscripcionsServices.getItemFS(idSubscription).get();
       } catch (error) {
+        let { date, userId }: { date: string; userId: string } =
+          req.query as any;
+        let data: IBackLogs = {
+          date: new Date(date),
+          userId,
+          log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.log("🚀 ~ Server ~ err:", err);
+          });
+
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para la subscripcion ${idSubscription}`,
         });
@@ -128,6 +179,23 @@ class TelegramController {
         try {
           res3 = await modelsServices.getItemFS(subscription.modelId).get();
         } catch (error) {
+          let { date, userId }: { date: string; userId: string } =
+            req.query as any;
+          let data: IBackLogs = {
+            date: new Date(date),
+            userId,
+            log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+              error
+            )}`,
+          };
+
+          backLogsServices
+            .postDataFS(data)
+            .then((res) => {})
+            .catch((err) => {
+              console.log("🚀 ~ Server ~ err:", err);
+            });
+
           res.status(500).json({
             error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
           });
@@ -164,6 +232,23 @@ class TelegramController {
           1
         );
       } catch (error) {
+        let { date, userId }: { date: string; userId: string } =
+          req.query as any;
+        let data: IBackLogs = {
+          date: new Date(date),
+          userId,
+          log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.log("🚀 ~ Server ~ err:", err);
+          });
+
         res.status(500).json({
           error: `Error interno del servidor al crear el link de invitacion para el grupo ${model.groupId}`,
         });
@@ -195,6 +280,23 @@ class TelegramController {
         try {
           await subscripcionsServices.patchDataFS(id, subscription);
         } catch (error) {
+          let { date, userId }: { date: string; userId: string } =
+            req.query as any;
+          let data: IBackLogs = {
+            date: new Date(date),
+            userId,
+            log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+              error
+            )}`,
+          };
+
+          backLogsServices
+            .postDataFS(data)
+            .then((res) => {})
+            .catch((err) => {
+              console.log("🚀 ~ Server ~ err:", err);
+            });
+
           res.status(500).json({
             error: `Error interno del servidor al actualizar la subscripcion ${subscription.id}`,
           });
@@ -211,6 +313,23 @@ class TelegramController {
       try {
         await ordersServices.patchDataFS(id, order);
       } catch (error) {
+        let { date, userId }: { date: string; userId: string } =
+          req.query as any;
+        let data: IBackLogs = {
+          date: new Date(date),
+          userId,
+          log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.log("🚀 ~ Server ~ err:", err);
+          });
+
         res.status(500).json({
           error: `Error interno del servidor al actualizar la orden ${id}`,
         });
@@ -273,6 +392,22 @@ class TelegramController {
         return s;
       });
     } catch (error) {
+      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let data: IBackLogs = {
+        date: new Date(date),
+        userId,
+        log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para las subscripciones`,
       });
@@ -291,6 +426,23 @@ class TelegramController {
             .get()
         ).docs[0];
       } catch (error) {
+        let { date, userId }: { date: string; userId: string } =
+          req.query as any;
+        let data: IBackLogs = {
+          date: new Date(date),
+          userId,
+          log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.log("🚀 ~ Server ~ err:", err);
+          });
+
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para el usuario ${subscription.userId}`,
         });
@@ -302,6 +454,23 @@ class TelegramController {
       try {
         resModel = await modelsServices.getItemFS(subscription.modelId).get();
       } catch (error) {
+        let { date, userId }: { date: string; userId: string } =
+          req.query as any;
+        let data: IBackLogs = {
+          date: new Date(date),
+          userId,
+          log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.log("🚀 ~ Server ~ err:", err);
+          });
+
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
         });
@@ -337,6 +506,23 @@ class TelegramController {
           dataSubscription
         );
       } catch (error) {
+        let { date, userId }: { date: string; userId: string } =
+          req.query as any;
+        let data: IBackLogs = {
+          date: new Date(date),
+          userId,
+          log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.log("🚀 ~ Server ~ err:", err);
+          });
+
         res.status(500).json({
           error: `Error interno del servidor al actualizar la base de datos para la subscripcion ${idSubscription}`,
         });
@@ -390,6 +576,22 @@ class TelegramController {
         "¡Hola! Soy el bot de OnlyGram"
       );
     } catch (error) {
+      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let data: IBackLogs = {
+        date: new Date(date),
+        userId,
+        log: `TelegramController ~ comunicarBotCliente ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
       res.status(500).json({
         error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
       });
