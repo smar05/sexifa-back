@@ -23,6 +23,7 @@ export const environment = {
     users: "users",
     subscriptions: "subscriptions",
     orders: "orders",
+    back_logs: "back_logs",
   },
   tokenTelegraf: "6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw",
   urlTelegramApi: "telegram",

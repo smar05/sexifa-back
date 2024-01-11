@@ -7,6 +7,13 @@ import admin from "firebase-admin";
 import userServices from "./services/user-service";
 import { Iuser } from "./interfaces/i-user";
 import { UserStatusEnum } from "./enums/user-status-enum";
+import { IBackLogs } from "./interfaces/i-back-logs";
+import backLogsServices from "./services/back-logs-service";
+import {
+  VariablesGlobales,
+  setVariablesGlobales,
+  variablesGlobales,
+} from "./variables-globales";
 
 class Server {
   private app: Application;
@@ -43,6 +50,7 @@ class Server {
 
     this.app.use(this.verifyToken);
     this.app.use(this.verifyUser);
+    this.app.use(this.asignarVariablesGlobales);
   }
 
   /**
@@ -73,6 +81,25 @@ class Server {
         console.error(
           "🚀 ~ file: index.ts ~ Server ~ verifyToken: Token invalido"
         );
+
+        let { date, userId }: { date: string; userId: string } = req.query;
+        let data: IBackLogs = {
+          userId,
+          date: new Date(date),
+          log: `index.ts ~ Server ~ verifyToken ~ JSON.stringify(error): ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.log("🚀 ~ Server ~ err:", err);
+          });
+
+        console.error(error);
+
         res.status(401).json({ error: "Token inválido" });
         return;
       });
@@ -108,6 +135,23 @@ class Server {
       console.error(
         "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario no encontrado"
       );
+
+      let { date, userId }: { date: string; userId: string } = req.query;
+      let data: IBackLogs = {
+        date: new Date(date),
+        userId,
+        log: `file: index.ts: ~ Server ~ verifyUser ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
       res.status(401).json({ error: "Usuario no encontrado" });
 
       return;
@@ -141,6 +185,36 @@ class Server {
       res.status(401).json({ error: "Usuario no activo" });
       return;
     }
+
+    next();
+  }
+
+  /**
+   * Variables para usar globalmente
+   *
+   * @private
+   * @param {(Request | any)} req
+   * @param {Response} res
+   * @param {*} next
+   * @return {*}  {Promise<void>}
+   * @memberof Server
+   */
+  private async asignarVariablesGlobales(
+    req: Request | any,
+    res: Response,
+    next: any
+  ): Promise<void> {
+    console.log(
+      "🚀 ~ file: index.ts: ~ Server ~ asignarVariablesGlobales: Inicia"
+    );
+
+    let { date, userId }: { date: string; userId: string } = req.query;
+    let vg: VariablesGlobales = {
+      date: new Date(date),
+      userId: userId,
+    };
+
+    setVariablesGlobales(vg);
 
     next();
   }
