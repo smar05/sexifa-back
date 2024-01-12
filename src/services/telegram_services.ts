@@ -3,6 +3,7 @@ import { environment } from "../environment";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "./back-logs-service";
 import { variablesGlobales } from "../variables-globales";
+import { ChatMember } from "telegraf/typings/core/types/typegram";
 
 class TelegramServices {
   constructor() {
@@ -159,6 +160,55 @@ class TelegramServices {
         });
 
       console.error(error);
+    }
+  }
+
+  /**
+   * Consulta si un usuario pertenece a un grupo
+   *
+   * @param {(string | number)} chatId
+   * @param {number} userId
+   * @return {*}  {Promise<boolean>}
+   * @memberof TelegramServices
+   */
+  public async esMiembroDelGrupo(
+    chatId: string | number,
+    userId: number
+  ): Promise<boolean> {
+    console.log(
+      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ esMiembroDelGrupo: Inicia para el chatId: " +
+        chatId
+    );
+
+    const bot: Telegraf = new Telegraf(environment.tokenTelegraf);
+
+    try {
+      let member: ChatMember = await bot.telegram.getChatMember(chatId, userId);
+      console.log("🚀 ~ TelegramServices ~ member:", member);
+
+      return (
+        member &&
+        (member.status === "member" || member.status === "administrator")
+      );
+    } catch (error) {
+      let data: IBackLogs = {
+        userId: variablesGlobales.userId,
+        date: variablesGlobales.date,
+        log: `TelegramServices ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+        });
+
+      console.error(error);
+
+      return false;
     }
   }
 }
