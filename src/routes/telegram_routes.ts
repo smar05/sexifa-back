@@ -32,6 +32,10 @@ class TelegramRoutes {
       `/${telegramApi}/comunicar-bot-cliente`,
       telegramController.comunicarBotCliente
     );
+    this.router.get(
+      `/${telegramApi}/es-miembro-del-grupo`,
+      telegramController.esMiembroDelGrupo
+    );
 
     //POST
     this.router.post(
