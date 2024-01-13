@@ -20,7 +20,7 @@ class Server {
   private API: string = "/api";
   private bodyParser = require("body-parser");
   private corsOptions: { [key: string]: any } = {
-    origin: environment.frontUrl, // o '*' para permitir cualquier origen
+    origin: [environment.frontUrl, ...environment.cors], // o '*' para permitir cualquier origen
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: false, // habilitar el intercambio de cookies entre el cliente y el servidor
   };
