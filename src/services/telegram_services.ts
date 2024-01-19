@@ -46,10 +46,11 @@ class TelegramServices {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       console.error(error);
-      return error;
+      throw error;
     }
   }
 
@@ -84,9 +85,11 @@ class TelegramServices {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       console.error(error);
+      throw error;
     }
   }
 
@@ -157,9 +160,11 @@ class TelegramServices {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       console.error(error);
+      throw error;
     }
   }
 
@@ -204,6 +209,7 @@ class TelegramServices {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       console.error(error);

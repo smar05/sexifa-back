@@ -93,6 +93,7 @@ class Server {
           .then((res) => {})
           .catch((err) => {
             console.log("🚀 ~ Server ~ err:", err);
+            throw err;
           });
 
         console.error(error);
@@ -147,6 +148,7 @@ class Server {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       res.status(401).json({ error: "Usuario no encontrado" });

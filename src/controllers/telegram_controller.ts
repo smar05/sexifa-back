@@ -77,11 +77,13 @@ class TelegramController {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para la orden ${orderId}`,
       });
+      throw error;
     }
 
     let order: Iorders = res1.data();
@@ -120,11 +122,13 @@ class TelegramController {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para el usuario ${order.userId}`,
       });
+      throw error;
     }
 
     let user: Iuser = res4.data();
@@ -156,11 +160,13 @@ class TelegramController {
           .then((res) => {})
           .catch((err) => {
             console.log("🚀 ~ Server ~ err:", err);
+            throw err;
           });
 
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para la subscripcion ${idSubscription}`,
         });
+        throw error;
       }
 
       let subscription: Isubscriptions = res2.data();
@@ -194,11 +200,13 @@ class TelegramController {
             .then((res) => {})
             .catch((err) => {
               console.log("🚀 ~ Server ~ err:", err);
+              throw err;
             });
 
           res.status(500).json({
             error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
           });
+          throw error;
         }
 
         let model: Imodels = res3.data();
@@ -247,11 +255,13 @@ class TelegramController {
           .then((res) => {})
           .catch((err) => {
             console.log("🚀 ~ Server ~ err:", err);
+            throw err;
           });
 
         res.status(500).json({
           error: `Error interno del servidor al crear el link de invitacion para el grupo ${model.groupId}`,
         });
+        throw error;
       }
 
       links.set(model.name, inviteLink);
@@ -295,11 +305,13 @@ class TelegramController {
             .then((res) => {})
             .catch((err) => {
               console.log("🚀 ~ Server ~ err:", err);
+              throw err;
             });
 
           res.status(500).json({
             error: `Error interno del servidor al actualizar la subscripcion ${subscription.id}`,
           });
+          throw error;
         }
       }
     }
@@ -328,11 +340,13 @@ class TelegramController {
           .then((res) => {})
           .catch((err) => {
             console.log("🚀 ~ Server ~ err:", err);
+            throw err;
           });
 
         res.status(500).json({
           error: `Error interno del servidor al actualizar la orden ${id}`,
         });
+        throw error;
       }
     }
 
@@ -406,11 +420,13 @@ class TelegramController {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para las subscripciones`,
       });
+      throw error;
     }
 
     let subscripcionesCanceladas: string[] = [];
@@ -441,11 +457,13 @@ class TelegramController {
           .then((res) => {})
           .catch((err) => {
             console.log("🚀 ~ Server ~ err:", err);
+            throw err;
           });
 
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para el usuario ${subscription.userId}`,
         });
+        throw error;
       }
 
       let user: Iuser = resUser.data();
@@ -469,11 +487,13 @@ class TelegramController {
           .then((res) => {})
           .catch((err) => {
             console.log("🚀 ~ Server ~ err:", err);
+            throw err;
           });
 
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
         });
+        throw error;
       }
 
       let model: Imodels = resModel.data();
@@ -521,11 +541,13 @@ class TelegramController {
           .then((res) => {})
           .catch((err) => {
             console.log("🚀 ~ Server ~ err:", err);
+            throw err;
           });
 
         res.status(500).json({
           error: `Error interno del servidor al actualizar la base de datos para la subscripcion ${idSubscription}`,
         });
+        throw error;
       }
     }
 
@@ -590,11 +612,13 @@ class TelegramController {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       res.status(500).json({
         error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
       });
+      throw error;
     }
 
     if (res2.response && !res2.response.ok) {
@@ -671,11 +695,13 @@ class TelegramController {
         .then((res) => {})
         .catch((err) => {
           console.log("🚀 ~ Server ~ err:", err);
+          throw err;
         });
 
       res.status(500).json({
         error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
       });
+      throw error;
     }
 
     if (!res2) {
