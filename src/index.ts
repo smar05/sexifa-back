@@ -9,11 +9,8 @@ import { Iuser } from "./interfaces/i-user";
 import { UserStatusEnum } from "./enums/user-status-enum";
 import { IBackLogs } from "./interfaces/i-back-logs";
 import backLogsServices from "./services/back-logs-service";
-import {
-  VariablesGlobales,
-  setVariablesGlobales,
-  variablesGlobales,
-} from "./variables-globales";
+import { VariablesGlobales, setVariablesGlobales } from "./variables-globales";
+import models_routes from "./routes/models_routes";
 
 class Server {
   private app: Application;
@@ -227,6 +224,7 @@ class Server {
   public routes(): void {
     console.log("🚀 ~ file: index.ts ~ Server ~ routes: Inicia");
     this.app.use(`${this.API}`, telegramRoutes);
+    this.app.use(`${this.API}`, models_routes);
   }
 
   /**

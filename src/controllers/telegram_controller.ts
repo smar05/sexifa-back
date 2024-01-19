@@ -228,7 +228,7 @@ class TelegramController {
       try {
         inviteLink = await telegramServices.createChatInviteLink(
           model.groupId,
-          expireDate,
+          0, //expireDate,
           1
         );
       } catch (error) {
