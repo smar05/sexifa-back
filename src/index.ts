@@ -11,6 +11,7 @@ import { IBackLogs } from "./interfaces/i-back-logs";
 import backLogsServices from "./services/back-logs-service";
 import { VariablesGlobales, setVariablesGlobales } from "./variables-globales";
 import models_routes from "./routes/models_routes";
+import { setupCommands } from "./services/telegram-bot-command";
 
 class Server {
   private app: Application;
@@ -30,6 +31,7 @@ class Server {
     // Se inicializa la configuracion y las rutas
     this.config();
     this.routes();
+    setupCommands();
   }
 
   /**
