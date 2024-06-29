@@ -573,8 +573,11 @@ class TelegramController {
     let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
       {
         fromId: Joi.string().required(),
+        url: Joi.string(),
       },
-      req.query
+      req.query,
+      req.url,
+      req.query.url as string
     );
 
     if (resultadoValidacionError) {

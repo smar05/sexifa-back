@@ -64,6 +64,15 @@ class Server {
   private verifyToken(req: Request | any, res: Response, next: any): void {
     console.log("🚀 ~ file: index.ts ~ Server ~ verifyToken: Inicia");
 
+    if (
+      req.url.includes("comunicar-bot-cliente") &&
+      req.method === "GET" &&
+      req.query.url
+    ) {
+      next();
+      return;
+    }
+
     const token: string = req.query.auth as string;
 
     admin
@@ -121,6 +130,16 @@ class Server {
     next: any
   ): Promise<void> {
     console.log("🚀 ~ file: index.ts: ~ Server ~ verifyUser: Inicia");
+
+    if (
+      req.url.includes("comunicar-bot-cliente") &&
+      req.method === "GET" &&
+      req.query.url
+    ) {
+      next();
+      return;
+    }
+
     const userId: string = req.query.userId as string;
 
     let resUser: any = {};
