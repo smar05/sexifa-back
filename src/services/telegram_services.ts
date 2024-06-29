@@ -3,7 +3,11 @@ import { environment } from "../environment";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "./back-logs-service";
 import { variablesGlobales } from "../variables-globales";
-import { ChatMember } from "telegraf/typings/core/types/typegram";
+import {
+  ChatMember,
+  ChatMemberAdministrator,
+  ChatMemberOwner,
+} from "telegraf/typings/core/types/typegram";
 
 class TelegramServices {
   constructor() {
@@ -200,6 +204,59 @@ class TelegramServices {
         userId: variablesGlobales.userId,
         date: variablesGlobales.date,
         log: `TelegramServices ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+          throw err;
+        });
+
+      console.error(error);
+
+      return false;
+    }
+  }
+
+  /**
+   * Consulta si el bot pertenece a un grupo y es admin
+   *
+   * @param {(string | number)} chatId
+   * @return {*}  {Promise<boolean>}
+   * @memberof TelegramServices
+   */
+  public async botEsAdminDelGrupo(chatId: string | number): Promise<boolean> {
+    console.log(
+      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ botEsAdminDelGrupo: Inicia para el chatId: " +
+        chatId
+    );
+
+    const bot: Telegraf = new Telegraf(environment.tokenTelegraf);
+
+    try {
+      let admins: (ChatMemberOwner | ChatMemberAdministrator)[] =
+        await bot.telegram.getChatAdministrators(chatId);
+      console.log("🚀 ~ TelegramServices ~ member:", admins);
+
+      if (!admins) return false;
+
+      let botMember: ChatMemberAdministrator = admins.find(
+        (admin: ChatMemberOwner | ChatMemberAdministrator) =>
+          admin.user.is_bot && admin.user.username === environment.userNameBot
+      ) as ChatMemberAdministrator;
+
+      if (!botMember) return false;
+
+      return true;
+    } catch (error) {
+      let data: IBackLogs = {
+        userId: variablesGlobales.userId,
+        date: variablesGlobales.date,
+        log: `TelegramServices ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
         )}`,
       };

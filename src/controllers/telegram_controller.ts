@@ -724,6 +724,89 @@ class TelegramController {
 
     return;
   }
+
+  /**
+   * Consulta si el bot pertenece a un grupo y es admin
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @return {*}  {Promise<void>}
+   * @memberof TelegramController
+   */
+  public async botEsAdminDelGrupo(req: Request, res: Response): Promise<void> {
+    console.log(
+      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ esMiembroDelGrupo: Inicia"
+    );
+
+    // Validacion de datos
+    let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
+      {
+        chatId: Joi.string().required(),
+      },
+      req.query
+    );
+
+    if (resultadoValidacionError) {
+      console.log(
+        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ botEsAdminDelGrupo: Error en la validacion con Joi: ",
+        resultadoValidacionError
+      );
+      // Si hay errores de validación, enviar una respuesta de error
+      return res
+        .status(400)
+        .json({ error: resultadoValidacionError.details[0].message }) as any;
+    }
+
+    const chatId: string = req.query.chatId as string;
+
+    let res2: boolean = false;
+
+    try {
+      res2 = await telegramServices.botEsAdminDelGrupo(chatId);
+    } catch (error) {
+      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let data: IBackLogs = {
+        date: new Date(date),
+        userId,
+        log: `TelegramController ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.log("🚀 ~ Server ~ err:", err);
+          throw err;
+        });
+
+      res.status(500).json({
+        error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
+      });
+      throw error;
+    }
+
+    if (!res2) {
+      res
+        .json({
+          mensaje: "El Bot no pertenece al grupo",
+          perteneceAlGrupo: false,
+          code: 400,
+        })
+        .status(400);
+
+      return;
+    }
+
+    res.json({
+      mensaje: "El bot pertenece al grupo",
+      perteneceAlGrupo: true,
+      code: 200,
+    });
+
+    return;
+  }
 }
 
 const telegramController = new TelegramController();
