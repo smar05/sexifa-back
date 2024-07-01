@@ -12,6 +12,10 @@ class OrdersService {
   private fireStorageService: FireStorageService;
 
   constructor() {
+    console.log(
+      "🚀 ~ file: orders-service.ts ~ OrdersService ~ constructor: Inicia"
+    );
+
     this.fireStorageService = new FireStorageService();
   }
 
@@ -23,6 +27,9 @@ class OrdersService {
    * @memberof OrdersService
    */
   public getDataFS(): CollectionReference<DocumentData> {
+    console.log(
+      "🚀 ~ file: orders-service.ts ~ OrdersService ~ getDataFS: Inicia"
+    );
     return this.fireStorageService.getData(this.urlOrders);
   }
 
@@ -34,6 +41,10 @@ class OrdersService {
    * @memberof OrdersService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
+    console.log(
+      "🚀 ~ file: orders-service.ts ~ OrdersService ~ getItemFS: Inicia Doc: " +
+        doc
+    );
     return this.fireStorageService.getItem(this.urlOrders, doc);
   }
 
@@ -45,6 +56,9 @@ class OrdersService {
    * @memberof OrdersService
    */
   public postDataFS(data: Iorders): Promise<any> {
+    console.log(
+      "🚀 ~ file: orders-service.ts ~ OrdersService ~ postDataFS: Inicia"
+    );
     return this.fireStorageService.post(this.urlOrders, data);
   }
 
@@ -57,6 +71,10 @@ class OrdersService {
    * @memberof OrdersService
    */
   public patchDataFS(doc: string, data: Iorders): Promise<any> {
+    console.log(
+      "🚀 ~ file: orders-service.ts ~ OrdersService ~ patchDataFS: Inicia Doc: " +
+        doc
+    );
     return this.fireStorageService.patch(this.urlOrders, doc, data);
   }
 
@@ -68,6 +86,10 @@ class OrdersService {
    * @memberof OrdersService
    */
   public deleteDataFS(doc: string): Promise<any> {
+    console.log(
+      "🚀 ~ file: orders-service.ts ~ OrdersService ~ deleteDataFS: Inicia Doc: " +
+        doc
+    );
     return this.fireStorageService.delete(this.urlOrders, doc);
   }
 

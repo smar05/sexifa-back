@@ -12,6 +12,9 @@ class SubscriptionsService {
   private fireStorageService: FireStorageService;
 
   constructor() {
+    console.log(
+      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ constructor: Inicia"
+    );
     this.fireStorageService = new FireStorageService();
   }
 
@@ -23,6 +26,9 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public getDataFS(): CollectionReference<DocumentData> {
+    console.log(
+      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ getDataFS: Inicia"
+    );
     return this.fireStorageService.getData(this.urlSubscriptions);
   }
 
@@ -34,6 +40,10 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
+    console.log(
+      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ getItemFS: Inicia Doc: " +
+        doc
+    );
     return this.fireStorageService.getItem(this.urlSubscriptions, doc);
   }
 
@@ -45,6 +55,9 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public postDataFS(data: Isubscriptions): Promise<any> {
+    console.log(
+      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ postDataFS: Inicia"
+    );
     return this.fireStorageService.post(this.urlSubscriptions, data);
   }
 
@@ -57,6 +70,10 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public patchDataFS(doc: string, data: Isubscriptions): Promise<any> {
+    console.log(
+      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ patchDataFS: Inicia Doc: " +
+        doc
+    );
     return this.fireStorageService.patch(this.urlSubscriptions, doc, data);
   }
 
@@ -68,6 +85,10 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public deleteDataFS(doc: string): Promise<any> {
+    console.log(
+      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ deleteDataFS: Inicia Doc: " +
+        doc
+    );
     return this.fireStorageService.delete(this.urlSubscriptions, doc);
   }
 

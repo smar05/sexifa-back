@@ -1,7 +1,8 @@
 import admin from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-const serviceAccount = require("../firebase.json");
+import { environment } from "./environment";
+const serviceAccount: any = environment.firebase;
 
 initializeApp({
   credential: admin.credential.cert(serviceAccount),
