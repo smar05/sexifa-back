@@ -1,7 +1,7 @@
 export const environment = {
   port: 8080,
   frontUrl: "http://localhost:4200",
-  cors: ["https://sexifa-269bf--onlygram-groups-rehu2taa.web.app"],
+  cors: ["https://sexifa-269bf.web.app"],
   firebase: {
     type: "service_account",
     project_id: "sexifa-269bf",
