@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { environment } from "../environment";
 import modelsController from "../controllers/models_controller";
 
 class ModelsRoutes {
@@ -14,11 +13,10 @@ class ModelsRoutes {
 
   public config(): void {
     console.log("🚀 ~ file: models_routes.ts ~ ModelsRoutes ~ config: Inicia");
-    const modelsApi: string = environment.urlModelsApi;
 
     // GET
     this.router.get(
-      `/${modelsApi}/obtener-precios`,
+      `/obtener-precios`,
       modelsController.calcularPrecioSubscripcion
     );
   }

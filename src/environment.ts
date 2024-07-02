@@ -27,7 +27,5 @@ export const environment = {
     back_logs: "back_logs",
   },
   tokenTelegraf: "6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw",
-  urlTelegramApi: "telegram",
-  urlModelsApi: "models",
   userNameBot: "OnlyGramGroup_BOT",
 };

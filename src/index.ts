@@ -11,6 +11,7 @@ import { IBackLogs } from "./interfaces/i-back-logs";
 import backLogsServices from "./services/back-logs-service";
 import { VariablesGlobales, setVariablesGlobales } from "./variables-globales";
 import models_routes from "./routes/models_routes";
+import { EnumUrlEnpoints } from "./enums/enum-url-enpoints";
 
 class Server {
   private app: Application;
@@ -244,8 +245,11 @@ class Server {
    */
   public routes(): void {
     console.log("🚀 ~ file: index.ts ~ Server ~ routes: Inicia");
-    this.app.use(`${this.API}`, telegramRoutes);
-    this.app.use(`${this.API}`, models_routes);
+    this.app.use(
+      `${this.API}/${EnumUrlEnpoints.urlTelegramApi}`,
+      telegramRoutes
+    );
+    this.app.use(`${this.API}/${EnumUrlEnpoints.urlModelsApi}`, models_routes);
   }
 
   /**

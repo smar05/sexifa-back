@@ -1,6 +1,5 @@
 import { Router } from "express";
 import telegramController from "../controllers/telegram_controller";
-import { environment } from "../environment";
 
 class TelegramRoutes {
   private router: Router = Router();
@@ -21,31 +20,24 @@ class TelegramRoutes {
     console.log(
       "🚀 ~ file: telegram_routes.ts ~ TelegramRoutes ~ config: Inicia"
     );
-    const telegramApi: string = environment.urlTelegramApi;
 
     // GET
+    this.router.get(`/enviar-link`, telegramController.enviarLink);
     this.router.get(
-      `/${telegramApi}/enviar-link`,
-      telegramController.enviarLink
-    );
-    this.router.get(
-      `/${telegramApi}/comunicar-bot-cliente`,
+      `/comunicar-bot-cliente`,
       telegramController.comunicarBotCliente
     );
     this.router.get(
-      `/${telegramApi}/es-miembro-del-grupo`,
+      `/es-miembro-del-grupo`,
       telegramController.esMiembroDelGrupo
     );
     this.router.get(
-      `/${telegramApi}/bot-es-admin-del-grupo`,
+      `/bot-es-admin-del-grupo`,
       telegramController.botEsAdminDelGrupo
     );
 
     //POST
-    this.router.post(
-      `/${telegramApi}/quitar-acceso`,
-      telegramController.quitarAcceso
-    );
+    this.router.post(`/quitar-acceso`, telegramController.quitarAcceso);
   }
 
   // Getters y Setters
