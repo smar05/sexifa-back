@@ -24,7 +24,6 @@ export class JoiMiddlewareService {
 
     if (!url?.includes("comunicar-bot-cliente") || origin !== "register") {
       camposAValidar.auth = Joi.string().required();
-      camposAValidar.userId = Joi.string().required();
       camposAValidar.date = Joi.string().required();
     }
 

@@ -1,6 +1,7 @@
 export type VariablesGlobales = {
   date: Date;
   userId: string;
+  email: string;
 };
 
 let variablesGlobales: VariablesGlobales = {} as any;
