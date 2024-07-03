@@ -25,7 +25,11 @@ export const environment = {
     subscriptions: "subscriptions",
     orders: "orders",
     back_logs: "back_logs",
+    epayco_trans: "epayco_trans",
   },
   tokenTelegraf: "6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw",
   userNameBot: "OnlyGramGroup_BOT",
+  epayco: {
+    idBusinnes: "1462767",
+  },
 };

@@ -12,7 +12,9 @@ import backLogsServices from "./services/back-logs-service";
 import { VariablesGlobales, setVariablesGlobales } from "./variables-globales";
 import models_routes from "./routes/models_routes";
 import { EnumUrlEnpoints } from "./enums/enum-url-enpoints";
+import epaycoTransRoutes from "./routes/epayco-trans-routes";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
+import { IEpaycoTransRes } from "./interfaces/i-epayco-trans";
 
 class Server {
   private app: Application;
@@ -73,7 +75,16 @@ class Server {
       return;
     }
 
-    const token: string = req.query.auth as string;
+    let token: string = null as any;
+
+    if (
+      req.url.includes("/api/epayco-trans/confirmacion") &&
+      req.method === "POST"
+    ) {
+      token = (req.query as IEpaycoTransRes).x_extra1;
+    } else {
+      token = req.query.auth;
+    }
 
     admin
       .auth()
@@ -138,7 +149,7 @@ class Server {
     if (
       req.url.includes("comunicar-bot-cliente") &&
       req.method === "GET" &&
-      req.query.url
+      req.query.url === "register"
     ) {
       next();
       return;
@@ -234,8 +245,8 @@ class Server {
     );
 
     let { date }: { date: string } = req.query;
-    let userId: string = (req.user as DecodedIdToken).uid;
-    let email: string = (req.user as DecodedIdToken).email || "";
+    let userId: string = (req.user as DecodedIdToken)?.uid || "";
+    let email: string = (req.user as DecodedIdToken)?.email || "";
     let vg: VariablesGlobales = {
       date: new Date(date),
       userId: userId,
@@ -259,6 +270,10 @@ class Server {
       telegramRoutes
     );
     this.app.use(`${this.API}/${EnumUrlEnpoints.urlModelsApi}`, models_routes);
+    this.app.use(
+      `${this.API}/${EnumUrlEnpoints.urlEpaycoTrans}`,
+      epaycoTransRoutes
+    );
   }
 
   /**
