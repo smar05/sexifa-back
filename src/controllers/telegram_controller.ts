@@ -15,6 +15,7 @@ import { JoiMiddlewareService } from "../services/joiMiddleware-service";
 import Joi from "joi";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "../services/back-logs-service";
+import { variablesGlobales } from "../variables-globales";
 
 class TelegramController {
   constructor() {
@@ -63,10 +64,10 @@ class TelegramController {
     try {
       res1 = await ordersServices.getItemFS(orderId).get();
     } catch (error) {
-      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let { date }: { date: string } = req.query as any;
       let data: IBackLogs = {
         date: new Date(date),
-        userId,
+        userId: variablesGlobales.userId,
         log: `TelegramController ~ enviarLinkr ~ JSON.stringify(error): ${JSON.stringify(
           error
         )}`,
@@ -108,10 +109,10 @@ class TelegramController {
         await userServices.getDataFS().where("id", "==", order.userId).get()
       ).docs[0];
     } catch (error) {
-      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let { date }: { date: string } = req.query as any;
       let data: IBackLogs = {
         date: new Date(date),
-        userId,
+        userId: variablesGlobales.userId,
         log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
           error
         )}`,
@@ -145,11 +146,10 @@ class TelegramController {
       try {
         res2 = await subscripcionsServices.getItemFS(idSubscription).get();
       } catch (error) {
-        let { date, userId }: { date: string; userId: string } =
-          req.query as any;
+        let { date }: { date: string } = req.query as any;
         let data: IBackLogs = {
           date: new Date(date),
-          userId,
+          userId: variablesGlobales.userId,
           log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
             error
           )}`,
@@ -185,11 +185,10 @@ class TelegramController {
         try {
           res3 = await modelsServices.getItemFS(subscription.modelId).get();
         } catch (error) {
-          let { date, userId }: { date: string; userId: string } =
-            req.query as any;
+          let { date }: { date: string } = req.query as any;
           let data: IBackLogs = {
             date: new Date(date),
-            userId,
+            userId: variablesGlobales.userId,
             log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
               error
             )}`,
@@ -240,11 +239,10 @@ class TelegramController {
           1
         );
       } catch (error) {
-        let { date, userId }: { date: string; userId: string } =
-          req.query as any;
+        let { date }: { date: string } = req.query as any;
         let data: IBackLogs = {
           date: new Date(date),
-          userId,
+          userId: variablesGlobales.userId,
           log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
             error
           )}`,
@@ -290,11 +288,10 @@ class TelegramController {
         try {
           await subscripcionsServices.patchDataFS(id, subscription);
         } catch (error) {
-          let { date, userId }: { date: string; userId: string } =
-            req.query as any;
+          let { date }: { date: string } = req.query as any;
           let data: IBackLogs = {
             date: new Date(date),
-            userId,
+            userId: variablesGlobales.userId,
             log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
               error
             )}`,
@@ -325,11 +322,10 @@ class TelegramController {
       try {
         await ordersServices.patchDataFS(id, order);
       } catch (error) {
-        let { date, userId }: { date: string; userId: string } =
-          req.query as any;
+        let { date }: { date: string } = req.query as any;
         let data: IBackLogs = {
           date: new Date(date),
-          userId,
+          userId: variablesGlobales.userId,
           log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
             error
           )}`,
@@ -406,10 +402,10 @@ class TelegramController {
         return s;
       });
     } catch (error) {
-      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let { date }: { date: string } = req.query as any;
       let data: IBackLogs = {
         date: new Date(date),
-        userId,
+        userId: variablesGlobales.userId,
         log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
           error
         )}`,
@@ -442,11 +438,10 @@ class TelegramController {
             .get()
         ).docs[0];
       } catch (error) {
-        let { date, userId }: { date: string; userId: string } =
-          req.query as any;
+        let { date }: { date: string } = req.query as any;
         let data: IBackLogs = {
           date: new Date(date),
-          userId,
+          userId: variablesGlobales.userId,
           log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
             error
           )}`,
@@ -472,11 +467,10 @@ class TelegramController {
       try {
         resModel = await modelsServices.getItemFS(subscription.modelId).get();
       } catch (error) {
-        let { date, userId }: { date: string; userId: string } =
-          req.query as any;
+        let { date }: { date: string } = req.query as any;
         let data: IBackLogs = {
           date: new Date(date),
-          userId,
+          userId: variablesGlobales.userId,
           log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
             error
           )}`,
@@ -526,11 +520,10 @@ class TelegramController {
           dataSubscription
         );
       } catch (error) {
-        let { date, userId }: { date: string; userId: string } =
-          req.query as any;
+        let { date }: { date: string } = req.query as any;
         let data: IBackLogs = {
           date: new Date(date),
-          userId,
+          userId: variablesGlobales.userId,
           log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
             error
           )}`,
@@ -601,10 +594,10 @@ class TelegramController {
         "¡Hola! Soy el bot de OnlyGram"
       );
     } catch (error) {
-      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let { date }: { date: string } = req.query as any;
       let data: IBackLogs = {
         date: new Date(date),
-        userId,
+        userId: variablesGlobales.userId,
         log: `TelegramController ~ comunicarBotCliente ~ JSON.stringify(error): ${JSON.stringify(
           error
         )}`,
@@ -684,10 +677,10 @@ class TelegramController {
     try {
       res2 = await telegramServices.esMiembroDelGrupo(chatId, fromId);
     } catch (error) {
-      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let { date }: { date: string } = req.query as any;
       let data: IBackLogs = {
         date: new Date(date),
-        userId,
+        userId: variablesGlobales.userId,
         log: `TelegramController ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
         )}`,
@@ -702,7 +695,7 @@ class TelegramController {
         });
 
       res.status(500).json({
-        error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
+        error: `Error interno del servidor al comunicar el bot con el usuario ${variablesGlobales.userId}`,
       });
       throw error;
     }
@@ -767,10 +760,10 @@ class TelegramController {
     try {
       res2 = await telegramServices.botEsAdminDelGrupo(chatId);
     } catch (error) {
-      let { date, userId }: { date: string; userId: string } = req.query as any;
+      let { date }: { date: string } = req.query as any;
       let data: IBackLogs = {
         date: new Date(date),
-        userId,
+        userId: variablesGlobales.userId,
         log: `TelegramController ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
         )}`,
@@ -785,7 +778,7 @@ class TelegramController {
         });
 
       res.status(500).json({
-        error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
+        error: `Error interno del servidor al comunicar el bot con el usuario ${variablesGlobales.userId}`,
       });
       throw error;
     }
