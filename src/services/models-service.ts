@@ -11,6 +11,10 @@ import {
   PriceTypeLimitEnum,
   TypeOfferEnum,
 } from "../interfaces/i-price-model";
+import { Isubscriptions } from "../interfaces/i-subscriptions";
+import { IBackLogs } from "../interfaces/i-back-logs";
+import { variablesGlobales } from "../variables-globales";
+import backLogsServices from "./back-logs-service";
 
 class ModelsService {
   private urlModels: string = environment.urlCollections.models;
@@ -157,6 +161,49 @@ class ModelsService {
     }
 
     return undefined;
+  }
+
+  public async reducirComprasPromocion(
+    subscripcion: Isubscriptions,
+    model: Imodels
+  ): Promise<any> {
+    let priceIndex: number = model.price.findIndex(
+      (p: IpriceModel) => subscripcion.time === p.time
+    );
+
+    // Si la oferta es por cantidad de compras, se reduce la compra realizada en la promocion
+    if (
+      model?.price[priceIndex]?.type_limit === PriceTypeLimitEnum.SALES &&
+      model?.price[priceIndex]?.sales > 0
+    ) {
+      try {
+        let dataModelUpdate: Imodels = { ...model };
+        let dataModelId: string = model.id as any;
+
+        dataModelUpdate.price[priceIndex].sales--;
+        delete dataModelUpdate.id;
+
+        await this.patchDataFS(dataModelId, dataModelUpdate);
+      } catch (error) {
+        console.error("Error: ", error);
+
+        let data: IBackLogs = {
+          date: new Date(),
+          userId: variablesGlobales.userId,
+          log: `ModelsService ~ reducirComprasPromocion: ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
+        throw error;
+      }
+    }
   }
 }
 

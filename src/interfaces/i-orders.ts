@@ -6,6 +6,6 @@ export interface Iorders {
   status: string;
   payMethod: string;
   price: number;
-  usd_cop: number;
   idPay: string;
+  currency: string;
 }

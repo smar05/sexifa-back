@@ -1,5 +1,6 @@
 import { Router } from "express";
 import epaycoTransController from "../controllers/epayco-trans-controller";
+import telegramController from "../controllers/telegram_controller";
 
 class EpaycoTransRoutes {
   private router: Router = Router();
@@ -13,7 +14,11 @@ class EpaycoTransRoutes {
     console.log("🚀 ~ EpaycoTransRoutes ~ config: Inicia");
 
     // POST
-    this.router.post(`/confirmacion`, epaycoTransController.confirmTransaccion);
+    this.router.post(
+      `/confirmacion`,
+      epaycoTransController.confirmTransaccion, // Confirmacion de la respuesta recibida por epayco
+      telegramController.enviarLink // Generacion de los links de acceso si se confirma epayco
+    );
   }
 
   // Getters y Setters
