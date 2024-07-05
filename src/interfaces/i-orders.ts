@@ -8,4 +8,5 @@ export interface Iorders {
   price: number;
   idPay: string;
   currency: string;
+  user_view: boolean; // Campo para saber si el usuario recibe la informacion en el front
 }

@@ -162,6 +162,7 @@ export class EpaycoTransController {
       price: Number(data.x_amount),
       idPay: data.x_ref_payco,
       currency: data.x_currency_code,
+      user_view: false,
     };
 
     let orderId: string = null as any;
