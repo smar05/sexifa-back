@@ -10,7 +10,7 @@ import { variablesGlobales } from "../variables-globales";
 import backLogsServices from "../services/back-logs-service";
 import { environment } from "../environment";
 import { ICart } from "../interfaces/i-cart";
-import { Functions } from "../helpers/helpers";
+import { Helpers } from "../helpers/helpers";
 import { Isubscriptions } from "../interfaces/i-subscriptions";
 import { StatusSubscriptionsEnum } from "../enums/status-subscriptions-enum";
 import { EnumPayMethods } from "../enums/enum-pay-methods";
@@ -21,6 +21,7 @@ import { DocumentSnapshot } from "firebase-admin/firestore";
 import { Iorders } from "../interfaces/i-orders";
 import { StatusOrdersEnum } from "../enums/status-orders-enum";
 import ordersServices from "../services/orders-service";
+import EpaycoSdkService from "../services/epayco-sdk.service";
 
 export class EpaycoTransController {
   constructor() {
@@ -59,12 +60,19 @@ export class EpaycoTransController {
       data.x_extra1?.length > 0 &&
       data.x_extra2?.length > 0 &&
       data.x_extra3?.length > 0 &&
+      data.x_ref_payco?.length > 0 &&
       JSON.parse(data.x_extra3) &&
       Number(data.x_amount) > 0 &&
       regex.test(data.x_transaction_date) &&
       data.x_cust_id_cliente === environment.epayco.idBusinnes;
 
-    if (!valido) {
+    let epaycoSdkService: EpaycoSdkService = new EpaycoSdkService();
+    let validarTransaccion: boolean = await epaycoSdkService.validarTransaccion(
+      data.x_ref_payco,
+      data
+    );
+
+    if (!valido || !validarTransaccion) {
       return res
         .status(400)
         .json({ error: "Error en los datos de la transaccion" }) as any;
@@ -99,7 +107,7 @@ export class EpaycoTransController {
     let idsSubscriptions: string[] = [];
 
     for (const subCart of cart) {
-      let endTime: Date = Functions.incrementarMeses(
+      let endTime: Date = Helpers.incrementarMeses(
         timeNow,
         subCart.infoModelSubscription.timeSubscription
       );
