@@ -1,5 +1,6 @@
 import { EnumEpaycoResponse } from "../enums/enum-epayco-response";
 import {
+  EnumIEpaycoTransStatus,
   IEpaycoTransRes,
   IEpaycoTransSend,
 } from "../interfaces/i-epayco-trans";
@@ -17,7 +18,11 @@ import { EnumPayMethods } from "../enums/enum-pay-methods";
 import subscripcionsServices from "../services/subscriptions-service";
 import modelsServices from "../services/models-service";
 import { Imodels } from "../interfaces/i-models";
-import { DocumentSnapshot } from "firebase-admin/firestore";
+import {
+  DocumentData,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+} from "firebase-admin/firestore";
 import { Iorders } from "../interfaces/i-orders";
 import { StatusOrdersEnum } from "../enums/status-orders-enum";
 import ordersServices from "../services/orders-service";
@@ -70,6 +75,49 @@ export class EpaycoTransController {
       data.x_ref_payco,
       data
     );
+
+    // Consultar si la transaccion ya fue procesada antes
+    let resDb: QueryDocumentSnapshot<DocumentData> = null as any;
+
+    try {
+      resDb = (
+        await epaycoTransService
+          .getDataFS()
+          .where("id_epayco", "==", data.x_ref_payco)
+          .where("status", "==", EnumIEpaycoTransStatus.FINISHED)
+          .limit(1)
+          .get()
+      ).docs[0];
+      console.log("🚀 ~ EpaycoTransController ~ resDb:", resDb);
+    } catch (error) {
+      console.error("Error: ", error);
+      res.status(500).json({
+        error: `Ha ocurrido un error consultando epayco-trans`,
+      });
+
+      let data: IBackLogs = {
+        date: new Date(),
+        userId: variablesGlobales.userId,
+        log: `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.error(err);
+        });
+      throw error;
+    }
+    let epaycoBD: IEpaycoTransRes = resDb.data() as any;
+
+    if (epaycoBD) {
+      return res.status(400).json({
+        error: `Error, la transaccion ${data.x_ref_payco} ya existe`,
+      }) as any;
+    }
 
     if (!valido || !validarTransaccion) {
       return res
