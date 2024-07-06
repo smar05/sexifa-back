@@ -21,7 +21,7 @@ import { DocumentSnapshot } from "firebase-admin/firestore";
 import { Iorders } from "../interfaces/i-orders";
 import { StatusOrdersEnum } from "../enums/status-orders-enum";
 import ordersServices from "../services/orders-service";
-import EpaycoSdkService from "../services/epayco-sdk.service";
+import epaycoSdkService from "../services/epayco-sdk.service";
 
 export class EpaycoTransController {
   constructor() {
@@ -66,7 +66,6 @@ export class EpaycoTransController {
       regex.test(data.x_transaction_date) &&
       data.x_cust_id_cliente === environment.epayco.idBusinnes;
 
-    let epaycoSdkService: EpaycoSdkService = new EpaycoSdkService();
     let validarTransaccion: boolean = await epaycoSdkService.validarTransaccion(
       data.x_ref_payco,
       data

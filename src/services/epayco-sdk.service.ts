@@ -4,7 +4,7 @@ import { IEpaycoTransRes } from "../interfaces/i-epayco-trans";
 import { variablesGlobales } from "../variables-globales";
 import backLogsServices from "./back-logs-service";
 
-export default class EpaycoSdkService {
+class EpaycoSdkService {
   private epayco: any = null;
 
   constructor() {
@@ -65,3 +65,7 @@ export default class EpaycoSdkService {
     return Helpers.areObjectsEqual(data, dataRecibida);
   }
 }
+
+const epaycoSdkService = new EpaycoSdkService();
+
+export default epaycoSdkService;
