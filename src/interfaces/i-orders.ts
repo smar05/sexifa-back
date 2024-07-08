@@ -6,6 +6,7 @@ export interface Iorders {
   status: string;
   payMethod: string;
   price: number;
-  usd_cop: number;
   idPay: string;
+  currency: string;
+  user_view: boolean; // Campo para saber si el usuario recibe la informacion en el front
 }

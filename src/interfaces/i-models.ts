@@ -6,7 +6,7 @@ export interface Imodels {
   name: string;
   description?: string;
   active?: string;
-  price?: IpriceModel[];
+  price: IpriceModel[];
   groupId: string;
   gallery?: string;
   idUser?: string;

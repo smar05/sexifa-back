@@ -22,9 +22,9 @@ export class JoiMiddlewareService {
       "🚀 ~ file: joiMiddleware-service.ts ~ JoiMiddlewareService ~ validarDatos: Inicia"
     );
 
+    // Si la url es para comunicar bot con cliente desde registro, se omite la validacion
     if (!url?.includes("comunicar-bot-cliente") || origin !== "register") {
       camposAValidar.auth = Joi.string().required();
-      camposAValidar.userId = Joi.string().required();
       camposAValidar.date = Joi.string().required();
     }
 
