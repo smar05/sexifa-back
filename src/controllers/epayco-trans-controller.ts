@@ -111,7 +111,7 @@ export class EpaycoTransController {
         });
       throw error;
     }
-    let epaycoBD: IEpaycoTransRes = resDb.data() as any;
+    let epaycoBD: IEpaycoTransRes = resDb?.data() as any;
 
     if (epaycoBD) {
       return res.status(400).json({

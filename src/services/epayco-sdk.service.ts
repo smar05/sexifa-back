@@ -1,4 +1,3 @@
-import { Helpers } from "../helpers/helpers";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import { IEpaycoTransRes } from "../interfaces/i-epayco-trans";
 import { variablesGlobales } from "../variables-globales";
@@ -62,7 +61,35 @@ class EpaycoSdkService {
 
     let data: IEpaycoTransRes = res.data;
 
-    return Helpers.areObjectsEqual(data, dataRecibida);
+    return this.validarDatos(data, dataRecibida);
+  }
+
+  /**
+   * Validar que los datos de ambos objetos coincidan
+   *
+   * @private
+   * @param {IEpaycoTransRes} data1
+   * @param {IEpaycoTransRes} data2
+   * @return {*}  {boolean}
+   * @memberof EpaycoSdkService
+   */
+  private validarDatos(
+    data1: IEpaycoTransRes,
+    data2: IEpaycoTransRes
+  ): boolean {
+    return (
+      data1.x_cust_id_cliente == data2.x_cust_id_cliente &&
+      data1.x_ref_payco == data2.x_ref_payco &&
+      data1.x_id_factura == data2.x_id_factura &&
+      data1.x_amount == data2.x_amount &&
+      data1.x_currency_code == data2.x_currency_code &&
+      data1.x_response == data2.x_response &&
+      data1.x_cod_response == data2.x_cod_response &&
+      data1.x_customer_ip == data2.x_customer_ip &&
+      data1.x_extra1 == data2.x_extra1 &&
+      data1.x_extra2 == data2.x_extra2 &&
+      data1.x_extra3 == data2.x_extra3
+    );
   }
 }
 
