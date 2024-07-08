@@ -51,6 +51,7 @@ export interface IEpaycoTransRes {
   is_processable: string;
   x_extra1: string; // Token
   x_extra2: string; // Fecha
+  x_extra3: string; // Carrito
 }
 
 /**
@@ -102,6 +103,8 @@ export interface IEpaycoTransSend {
   // Enviados del front
   token: string; // Token
   fecha: string; // Fecha
+  userId: string;
+  cart: string; //Carrito de compras en la transaccion
 }
 
 export enum EnumIEpaycoTransStatus {

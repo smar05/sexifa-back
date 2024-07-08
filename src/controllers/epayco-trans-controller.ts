@@ -10,13 +10,43 @@ import { IBackLogs } from "../interfaces/i-back-logs";
 import { variablesGlobales } from "../variables-globales";
 import backLogsServices from "../services/back-logs-service";
 import { environment } from "../environment";
+import { ICart } from "../interfaces/i-cart";
+import { Helpers } from "../helpers/helpers";
+import { Isubscriptions } from "../interfaces/i-subscriptions";
+import { StatusSubscriptionsEnum } from "../enums/status-subscriptions-enum";
+import { EnumPayMethods } from "../enums/enum-pay-methods";
+import subscripcionsServices from "../services/subscriptions-service";
+import modelsServices from "../services/models-service";
+import { Imodels } from "../interfaces/i-models";
+import {
+  DocumentData,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+} from "firebase-admin/firestore";
+import { Iorders } from "../interfaces/i-orders";
+import { StatusOrdersEnum } from "../enums/status-orders-enum";
+import ordersServices from "../services/orders-service";
+import epaycoSdkService from "../services/epayco-sdk.service";
 
-class EpaycoTransController {
+export class EpaycoTransController {
   constructor() {
     console.log("🚀 ~ EpaycoTransController ~ constructor: Inicia");
   }
 
-  public async confirmTransaccion(req: Request, res: Response): Promise<void> {
+  /**
+   * Confirmacion de la transaccion realizada por epayco
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {*} next
+   * @return {*}  {Promise<void>}
+   * @memberof EpaycoTransController
+   */
+  public async confirmTransaccion(
+    req: Request,
+    res: Response,
+    next: any
+  ): Promise<void> {
     console.log("🚀 ~ EpaycoTransController ~ confirmTransaccion: Inicia");
 
     if (!req.query) {
@@ -32,74 +62,173 @@ class EpaycoTransController {
       data.x_cod_response?.length > 0 &&
       data.x_transaction_state?.length > 0 &&
       data.x_amount?.length > 0 &&
+      data.x_extra1?.length > 0 &&
+      data.x_extra2?.length > 0 &&
+      data.x_extra3?.length > 0 &&
+      data.x_ref_payco?.length > 0 &&
+      JSON.parse(data.x_extra3) &&
       Number(data.x_amount) > 0 &&
       regex.test(data.x_transaction_date) &&
       data.x_cust_id_cliente === environment.epayco.idBusinnes;
 
-    if (!valido) {
+    let validarTransaccion: boolean = await epaycoSdkService.validarTransaccion(
+      data.x_ref_payco,
+      data
+    );
+
+    // Consultar si la transaccion ya fue procesada antes
+    let resDb: QueryDocumentSnapshot<DocumentData> = null as any;
+
+    try {
+      resDb = (
+        await epaycoTransService
+          .getDataFS()
+          .where("id_epayco", "==", data.x_ref_payco)
+          .where("status", "==", EnumIEpaycoTransStatus.FINISHED)
+          .limit(1)
+          .get()
+      ).docs[0];
+      console.log("🚀 ~ EpaycoTransController ~ resDb:", resDb);
+    } catch (error) {
+      console.error("Error: ", error);
+      res.status(500).json({
+        error: `Ha ocurrido un error consultando epayco-trans`,
+      });
+
+      let data: IBackLogs = {
+        date: new Date(),
+        userId: variablesGlobales.userId,
+        log: `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.error(err);
+        });
+      throw error;
+    }
+    let epaycoBD: IEpaycoTransRes = resDb?.data() as any;
+
+    if (epaycoBD) {
+      return res.status(400).json({
+        error: `Error, la transaccion ${data.x_ref_payco} ya existe`,
+      }) as any;
+    }
+
+    if (!valido || !validarTransaccion) {
       return res
         .status(400)
         .json({ error: "Error en los datos de la transaccion" }) as any;
     }
 
-    if (data.x_response.toLowerCase() !== EnumEpaycoResponse.ACEPTADA) {
-      return res.status(400).json({ error: "Transaccion no aceptada" }) as any;
+    if (
+      data.x_response.toLowerCase() !== EnumEpaycoResponse.ACEPTADA ||
+      data.x_cod_response !== "1"
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Transaccion no aceptada o pendiente" }) as any;
     }
 
-    // Guardar informacion para consultarse en el front
-    let dataSave: IEpaycoTransSend = {
-      status: EnumIEpaycoTransStatus.IN_PROGRESS, // Estatus del proceso de la transaccion en el negocio
-      x_cust_id_cliente: data.x_cust_id_cliente, // Id del negocio
-      x_ref_payco: data.x_ref_payco,
-      x_id_invoice: data.x_id_invoice,
-      x_description: data.x_description,
-      x_amount: data.x_amount, // total de la venta
-      x_amount_country: data.x_amount_country, // Total de la venta en moneda local
-      x_tax: data.x_tax,
-      x_amount_base: data.x_amount_base,
-      x_currency_code: data.x_currency_code, // USD
-      x_bank_name: data.x_bank_name,
-      x_cardnumber: data.x_cardnumber,
-      x_quotas: data.x_quotas,
-      x_response: data.x_response, //'Aceptada',
-      x_approval_code: data.x_approval_code,
-      x_transaction_id: data.x_transaction_id,
-      x_transaction_date: data.x_transaction_date,
-      x_cod_response: data.x_cod_response, // '1',
-      x_response_reason_text: data.x_response_reason_text,
-      x_errorcode: data.x_errorcode,
-      x_cod_transaction_state: data.x_cod_transaction_state,
-      x_transaction_state: data.x_transaction_state, //'Aceptada',
-      x_franchise: data.x_franchise,
-      x_customer_doctype: data.x_customer_doctype, //'CC',
-      x_customer_document: data.x_customer_document, // Numero de documento
-      x_customer_name: data.x_customer_name, // Nombre del comprador
-      x_customer_lastname: data.x_customer_lastname, // Apellido del comprador
-      x_customer_email: data.x_customer_email, // Correo del comprador
-      x_customer_phone: data.x_customer_phone,
-      x_customer_movil: data.x_customer_movil,
-      x_customer_ind_pais: data.x_customer_ind_pais,
-      x_customer_country: data.x_customer_country,
-      x_customer_city: data.x_customer_city,
-      x_customer_address: data.x_customer_address,
-      x_customer_ip: data.x_customer_ip,
-      x_test_request: data.x_test_request,
-      x_signature: data.x_signature,
-      x_transaction_cycle: data.x_transaction_cycle,
-      is_processable: data.is_processable,
-      // Enviados del front
-      token: data.x_extra1, // Token
-      fecha: data.x_extra2, // Fecha
+    let dataSave: IEpaycoTransSend = await epaycoTransService.saveEpaycoTrans(
+      data
+    );
+
+    if (!dataSave) {
+      return res.status(500).json({
+        error: `Error interno del servidor al guardar los datos de la transaccion de epayco x_ref_payco: ${data.x_ref_payco}`,
+      }) as any;
+    }
+
+    // Proceso de crear la orden y subscripciones
+    const cart: ICart[] = JSON.parse(dataSave.cart);
+    const timeNow: Date = new Date(dataSave.fecha);
+    const userId: string = variablesGlobales.userId;
+
+    // Se organiza la informacion de las subscripciones compradas
+    // Se guarda la informacion de las subscripciones compradas
+    let idsSubscriptions: string[] = [];
+
+    for (const subCart of cart) {
+      let endTime: Date = Helpers.incrementarMeses(
+        timeNow,
+        subCart.infoModelSubscription.timeSubscription
+      );
+      let data: Isubscriptions = {
+        modelId: subCart.infoModelSubscription.idModel,
+        userId,
+        status: StatusSubscriptionsEnum.PAGADO,
+        price: subCart.price,
+        time: subCart.infoModelSubscription.timeSubscription,
+        beginTime: timeNow.toISOString().split("T")[0],
+        endTime: endTime.toISOString().split("T")[0],
+        date_created: dataSave.fecha,
+        payMethod: EnumPayMethods.EPAYCO,
+      };
+
+      let res: any = null;
+      let resModel: DocumentSnapshot | any = null;
+
+      try {
+        res = await subscripcionsServices.postDataFS(data);
+        resModel = await modelsServices.getItemFS(data.modelId).get();
+      } catch (error) {
+        console.error("Error: ", error);
+        res.status(500).json({
+          error: `Ha ocurrido un error guardando la subscripcion`,
+        });
+
+        let data: IBackLogs = {
+          date: new Date(),
+          userId: variablesGlobales.userId,
+          log: `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.error(err);
+          });
+        throw error;
+      }
+
+      let model: Imodels = { id: resModel.id, ...resModel.data() };
+
+      idsSubscriptions.push(res.id);
+
+      // Reducir la compra si esta en promocion
+      await modelsServices.reducirComprasPromocion(data, model);
+    }
+
+    // Se crea la orden
+    let dataOrder: Iorders = {
+      date_created: dataSave.fecha,
+      ids_subscriptions: idsSubscriptions,
+      userId,
+      status: StatusOrdersEnum.PAGADO,
+      payMethod: EnumPayMethods.EPAYCO,
+      price: Number(data.x_amount),
+      idPay: data.x_ref_payco,
+      currency: data.x_currency_code,
+      user_view: false,
     };
 
-    dataSave.status = EnumIEpaycoTransStatus.IN_PROGRESS;
+    let orderId: string = null as any;
 
     try {
-      await epaycoTransService.postDataFS(dataSave);
+      orderId = (await ordersServices.postDataFS(dataOrder)).id;
     } catch (error) {
-      let { date }: { date: string } = req.query as any;
+      console.error("Error: ", error);
+
       let data: IBackLogs = {
-        date: new Date(date),
+        date: new Date(),
         userId: variablesGlobales.userId,
         log: `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
           error
@@ -110,19 +239,24 @@ class EpaycoTransController {
         .postDataFS(data)
         .then((res) => {})
         .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
+          console.error(err);
         });
-
-      res.status(500).json({
-        error: `Error interno del servidor al guardar los datos de la transaccion de epayco x_ref_payco: ${dataSave.x_ref_payco}`,
-      });
       throw error;
     }
 
-    res.json({
-      mensaje: `Transaccion exitosa x_ref_payco: ${dataSave.x_ref_payco}`,
-    });
+    if (!orderId) {
+      return res.status(500).json({
+        error: `Error interno del servidor al guardar los datos de la orden`,
+      }) as any;
+    }
+
+    // Se envian los links de telegram en el siguiente middleware
+    req.query = {}; // Limpiar el query para el siguiente endpoint
+    req.query.orderId = orderId;
+    req.query.auth = dataSave.token;
+    req.query.date = dataSave.fecha;
+
+    next();
   }
 }
 

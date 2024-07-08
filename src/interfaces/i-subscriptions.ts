@@ -7,8 +7,6 @@ export interface Isubscriptions {
   time: number;
   beginTime: string;
   endTime: string;
-  usd_cop: number;
   payMethod: string;
   date_created: string;
-  modelStatus: string;
 }
