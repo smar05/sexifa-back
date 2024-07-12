@@ -1,6 +1,7 @@
 export interface Iorders {
   id?: string;
   date_created: string;
+  date_updated: string;
   ids_subscriptions: string[];
   userId: string;
   status: string;

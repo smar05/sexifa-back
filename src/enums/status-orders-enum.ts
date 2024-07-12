@@ -3,4 +3,6 @@ export enum StatusOrdersEnum {
   RECHAZADO = "rechazado",
   ANULADO = "anulado",
   CERRADO = "cerrado",
+  PENDIENTE = "pendiente",
+  FALLIDA = "fallida",
 }
