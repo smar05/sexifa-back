@@ -2,6 +2,7 @@ import {
   CollectionReference,
   DocumentData,
   DocumentReference,
+  QuerySnapshot,
 } from "firebase-admin/firestore";
 import { environment } from "../environment";
 import { FireStorageService } from "./firestorage-service";
@@ -13,6 +14,7 @@ import {
 import { variablesGlobales } from "../variables-globales";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "./back-logs-service";
+import { EnumEpaycoResponse } from "../enums/enum-epayco-response";
 
 class EpaycoTransService {
   private urlEpaycoTrans: string = environment.urlCollections.epayco_trans;
@@ -65,11 +67,11 @@ class EpaycoTransService {
    * Actualizar epayco_trans
    *
    * @param {string} doc
-   * @param {IEpaycoTransRes} data
+   * @param {IEpaycoTransSend} data
    * @return {*}  {Promise<any>}
    * @memberof EpaycoTransService
    */
-  public patchDataFS(doc: string, data: IEpaycoTransRes): Promise<any> {
+  public patchDataFS(doc: string, data: IEpaycoTransSend): Promise<any> {
     console.log(`🚀 ~ EpaycoTransService ~ patchDataFS: Inicia Doc: ${doc}`);
     return this.fireStorageService.patch(this.urlEpaycoTrans, doc, data);
   }
@@ -95,7 +97,10 @@ class EpaycoTransService {
   ): Promise<IEpaycoTransSend> {
     // Guardar informacion para consultarse en el front
     let dataSave: IEpaycoTransSend = {
-      status: EnumIEpaycoTransStatus.FINISHED, // Estatus del proceso de la transaccion en el negocio
+      status:
+        data.x_response.toLowerCase() == EnumEpaycoResponse.PENDIENTE
+          ? EnumIEpaycoTransStatus.IN_PROGRESS
+          : EnumIEpaycoTransStatus.FINISHED, // Estatus del proceso de la transaccion en el negocio
       x_cust_id_cliente: data.x_cust_id_cliente, // Id del negocio
       x_ref_payco: data.x_ref_payco,
       x_id_invoice: data.x_id_invoice,
@@ -141,8 +146,44 @@ class EpaycoTransService {
       cart: data.x_extra3,
     };
 
+    let idOrderInProcess: string = null as any;
+    if (data.x_response.toLowerCase() == EnumEpaycoResponse.ACEPTADA) {
+      let res: QuerySnapshot<DocumentData> = null as any;
+      try {
+        res = await this.getDataFS()
+          .where("x_ref_payco", "==", data.x_ref_payco)
+          .where("status", "==", EnumIEpaycoTransStatus.IN_PROGRESS)
+          .limit(1)
+          .get();
+      } catch (error) {
+        let date: string = variablesGlobales.date.toISOString();
+        let data: IBackLogs = {
+          date: new Date(date),
+          userId: variablesGlobales.userId,
+          log: `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
+            error
+          )}`,
+        };
+
+        backLogsServices
+          .postDataFS(data)
+          .then((res) => {})
+          .catch((err) => {
+            console.log("🚀 ~ Server ~ err:", err);
+            throw err;
+          });
+
+        return null as any;
+      }
+
+      if (res.docs?.length === 1)
+        idOrderInProcess = res.docs[0]?.id || (null as any);
+    }
+
     try {
-      await this.postDataFS(dataSave);
+      idOrderInProcess
+        ? await this.patchDataFS(idOrderInProcess, dataSave)
+        : await this.postDataFS(dataSave);
     } catch (error) {
       let date: string = variablesGlobales.date.toISOString();
       let data: IBackLogs = {

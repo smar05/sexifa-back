@@ -1,6 +1,5 @@
 import { EnumEpaycoResponse } from "../enums/enum-epayco-response";
 import {
-  EnumIEpaycoTransStatus,
   IEpaycoTransRes,
   IEpaycoTransSend,
 } from "../interfaces/i-epayco-trans";
@@ -22,6 +21,7 @@ import {
   DocumentData,
   DocumentSnapshot,
   QueryDocumentSnapshot,
+  QuerySnapshot,
 } from "firebase-admin/firestore";
 import { Iorders } from "../interfaces/i-orders";
 import { StatusOrdersEnum } from "../enums/status-orders-enum";
@@ -76,6 +76,12 @@ export class EpaycoTransController {
       data
     );
 
+    if (!valido || !validarTransaccion) {
+      return res
+        .status(400)
+        .json({ error: "Error en los datos de la transaccion" }) as any;
+    }
+
     // Consultar si la transaccion ya fue procesada antes
     let resDb: QueryDocumentSnapshot<DocumentData> = null as any;
 
@@ -83,12 +89,10 @@ export class EpaycoTransController {
       resDb = (
         await epaycoTransService
           .getDataFS()
-          .where("id_epayco", "==", data.x_ref_payco)
-          .where("status", "==", EnumIEpaycoTransStatus.FINISHED)
+          .where("x_ref_payco", "==", data.x_ref_payco)
           .limit(1)
           .get()
       ).docs[0];
-      console.log("🚀 ~ EpaycoTransController ~ resDb:", resDb);
     } catch (error) {
       console.error("Error: ", error);
       res.status(500).json({
@@ -111,27 +115,40 @@ export class EpaycoTransController {
         });
       throw error;
     }
-    let epaycoBD: IEpaycoTransRes = resDb?.data() as any;
+    let epaycoBD: IEpaycoTransSend = resDb?.data() as any;
 
-    if (epaycoBD) {
-      return res.status(400).json({
-        error: `Error, la transaccion ${data.x_ref_payco} ya existe`,
-      }) as any;
-    }
-
-    if (!valido || !validarTransaccion) {
-      return res
-        .status(400)
-        .json({ error: "Error en los datos de la transaccion" }) as any;
-    }
+    // Transacciones validas a procesar
+    let validoAceptado: boolean =
+      data.x_response.toLowerCase() == EnumEpaycoResponse.ACEPTADA &&
+      data.x_cod_response == "1";
+    let validoRechazado: boolean =
+      data.x_response.toLowerCase() == EnumEpaycoResponse.RECHAZADA &&
+      data.x_cod_response == "2";
+    let validoPendiente: boolean =
+      data.x_response.toLowerCase() == EnumEpaycoResponse.PENDIENTE &&
+      data.x_cod_response == "3";
+    let validoFallida: boolean =
+      data.x_response.toLowerCase() == EnumEpaycoResponse.FALLIDA &&
+      data.x_cod_response == "4";
 
     if (
-      data.x_response.toLowerCase() !== EnumEpaycoResponse.ACEPTADA ||
-      data.x_cod_response !== "1"
+      !(validoAceptado || validoRechazado || validoPendiente || validoFallida)
     ) {
-      return res
-        .status(400)
-        .json({ error: "Transaccion no aceptada o pendiente" }) as any;
+      console.error("Transaccion invalida");
+      return res.status(400).json({ error: "Transaccion invalida" }) as any;
+    }
+
+    // La transaccion guardada en DB debe venir como PENDIENTE para ser procesada
+    if (
+      epaycoBD &&
+      !(
+        epaycoBD?.x_response?.toLowerCase() === EnumEpaycoResponse.PENDIENTE &&
+        validoAceptado
+      )
+    ) {
+      return res.status(400).json({
+        error: `Error, la transaccion ${data.x_ref_payco} ya fue procesada`,
+      }) as any;
     }
 
     let dataSave: IEpaycoTransSend = await epaycoTransService.saveEpaycoTrans(
@@ -153,77 +170,75 @@ export class EpaycoTransController {
     // Se guarda la informacion de las subscripciones compradas
     let idsSubscriptions: string[] = [];
 
-    for (const subCart of cart) {
-      let endTime: Date = Helpers.incrementarMeses(
-        timeNow,
-        subCart.infoModelSubscription.timeSubscription
-      );
-      let data: Isubscriptions = {
-        modelId: subCart.infoModelSubscription.idModel,
-        userId,
-        status: StatusSubscriptionsEnum.PAGADO,
-        price: subCart.price,
-        time: subCart.infoModelSubscription.timeSubscription,
-        beginTime: timeNow.toISOString().split("T")[0],
-        endTime: endTime.toISOString().split("T")[0],
-        date_created: dataSave.fecha,
-        payMethod: EnumPayMethods.EPAYCO,
-      };
-
-      let res: any = null;
-      let resModel: DocumentSnapshot | any = null;
-
-      try {
-        res = await subscripcionsServices.postDataFS(data);
-        resModel = await modelsServices.getItemFS(data.modelId).get();
-      } catch (error) {
-        console.error("Error: ", error);
-        res.status(500).json({
-          error: `Ha ocurrido un error guardando la subscripcion`,
-        });
-
-        let data: IBackLogs = {
-          date: new Date(),
-          userId: variablesGlobales.userId,
-          log: `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
-            error
-          )}`,
+    // Se procesan las subscripciones solo si la transaccion es valida
+    if (validoAceptado) {
+      for (const subCart of cart) {
+        let endTime: Date = Helpers.incrementarMeses(
+          timeNow,
+          subCart.infoModelSubscription.timeSubscription
+        );
+        let data: Isubscriptions = {
+          modelId: subCart.infoModelSubscription.idModel,
+          userId,
+          status: StatusSubscriptionsEnum.PAGADO,
+          price: subCart.price,
+          time: subCart.infoModelSubscription.timeSubscription,
+          beginTime: timeNow.toISOString().split("T")[0],
+          endTime: endTime.toISOString().split("T")[0],
+          date_created: dataSave.fecha,
+          payMethod: EnumPayMethods.EPAYCO,
         };
 
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.error(err);
+        let res: any = null;
+        let resModel: DocumentSnapshot | any = null;
+
+        try {
+          res = await subscripcionsServices.postDataFS(data);
+          resModel = await modelsServices.getItemFS(data.modelId).get();
+        } catch (error) {
+          console.error("Error: ", error);
+          res.status(500).json({
+            error: `Ha ocurrido un error guardando la subscripcion`,
           });
-        throw error;
+
+          let data: IBackLogs = {
+            date: new Date(),
+            userId: variablesGlobales.userId,
+            log: `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
+              error
+            )}`,
+          };
+
+          backLogsServices
+            .postDataFS(data)
+            .then((res) => {})
+            .catch((err) => {
+              console.error(err);
+            });
+          throw error;
+        }
+
+        let model: Imodels = { id: resModel.id, ...resModel.data() };
+
+        idsSubscriptions.push(res.id);
+
+        // Reducir la compra si esta en promocion
+        await modelsServices.reducirComprasPromocion(data, model);
       }
-
-      let model: Imodels = { id: resModel.id, ...resModel.data() };
-
-      idsSubscriptions.push(res.id);
-
-      // Reducir la compra si esta en promocion
-      await modelsServices.reducirComprasPromocion(data, model);
     }
 
     // Se crea la orden
-    let dataOrder: Iorders = {
-      date_created: dataSave.fecha,
-      ids_subscriptions: idsSubscriptions,
-      userId,
-      status: StatusOrdersEnum.PAGADO,
-      payMethod: EnumPayMethods.EPAYCO,
-      price: Number(data.x_amount),
-      idPay: data.x_ref_payco,
-      currency: data.x_currency_code,
-      user_view: false,
-    };
+    let dataOrder: Iorders = null as any;
+    let resOrderPendienteToAceptado: Iorders = null as any;
+    let resPendienteToAceptado: QuerySnapshot<DocumentData> = null as any;
 
-    let orderId: string = null as any;
-
+    // Consultar si ya existe alguna orden
     try {
-      orderId = (await ordersServices.postDataFS(dataOrder)).id;
+      resPendienteToAceptado = await ordersServices
+        .getDataFS()
+        .where("idPay", "==", data.x_ref_payco)
+        .limit(1)
+        .get();
     } catch (error) {
       console.error("Error: ", error);
 
@@ -244,15 +259,145 @@ export class EpaycoTransController {
       throw error;
     }
 
-    if (!orderId) {
+    if (resPendienteToAceptado?.docs?.length == 1) {
+      resOrderPendienteToAceptado = {
+        id: resPendienteToAceptado.docs[0].id,
+        ...(resPendienteToAceptado.docs[0].data() as any),
+      };
+    }
+
+    // Si la transaccion ya existe, no se vuelve a hacer
+    if (
+      resOrderPendienteToAceptado &&
+      (resOrderPendienteToAceptado?.status === StatusOrdersEnum.PAGADO ||
+        resOrderPendienteToAceptado?.status === StatusOrdersEnum.RECHAZADO)
+    ) {
+      return res.status(400).json({
+        error: `La transaccion ya fue procesada`,
+      }) as any;
+    }
+
+    if (validoAceptado) {
+      // Orden que viene pendiente y pasara a pagada
+      if (
+        resOrderPendienteToAceptado &&
+        resOrderPendienteToAceptado.status === StatusOrdersEnum.PENDIENTE
+      ) {
+        resOrderPendienteToAceptado.status = StatusOrdersEnum.PAGADO;
+        resOrderPendienteToAceptado.user_view = false;
+        resOrderPendienteToAceptado.ids_subscriptions = idsSubscriptions;
+        resOrderPendienteToAceptado.date_updated = dataSave.fecha;
+      } else {
+        resOrderPendienteToAceptado = null as any;
+      }
+
+      dataOrder = resOrderPendienteToAceptado ?? {
+        date_created: dataSave.fecha,
+        date_updated: null,
+        ids_subscriptions: idsSubscriptions,
+        userId,
+        status: StatusOrdersEnum.PAGADO,
+        payMethod: EnumPayMethods.EPAYCO,
+        price: Number(data.x_amount),
+        idPay: data.x_ref_payco,
+        currency: data.x_currency_code,
+        user_view: false,
+      };
+    } else if (validoRechazado) {
+      dataOrder = {
+        date_created: dataSave.fecha,
+        date_updated: null as any,
+        ids_subscriptions: null as any,
+        userId,
+        status: StatusOrdersEnum.RECHAZADO,
+        payMethod: EnumPayMethods.EPAYCO,
+        price: Number(data.x_amount),
+        idPay: data.x_ref_payco,
+        currency: data.x_currency_code,
+        user_view: false,
+      };
+    } else if (validoPendiente) {
+      dataOrder = {
+        date_created: dataSave.fecha,
+        date_updated: null as any,
+        ids_subscriptions: null as any,
+        userId,
+        status: StatusOrdersEnum.PENDIENTE,
+        payMethod: EnumPayMethods.EPAYCO,
+        price: Number(data.x_amount),
+        idPay: data.x_ref_payco,
+        currency: data.x_currency_code,
+        user_view: false,
+      };
+    } else if (validoFallida) {
+      dataOrder = {
+        date_created: dataSave.fecha,
+        date_updated: null as any,
+        ids_subscriptions: null as any,
+        userId,
+        status: StatusOrdersEnum.FALLIDA,
+        payMethod: EnumPayMethods.EPAYCO,
+        price: Number(data.x_amount),
+        idPay: data.x_ref_payco,
+        currency: data.x_currency_code,
+        user_view: false,
+      };
+    } else {
+      console.error("Transaccion invalida");
+      return res.status(400).json({ error: "Transaccion invalida" }) as any;
+    }
+
+    let orderId: string = null as any;
+    let idOrderPendienteToAceptado: string = null as any;
+
+    try {
+      if (resOrderPendienteToAceptado) {
+        idOrderPendienteToAceptado =
+          resOrderPendienteToAceptado.id || (undefined as any);
+        delete resOrderPendienteToAceptado.id;
+      }
+
+      orderId = resOrderPendienteToAceptado
+        ? (
+            await ordersServices.patchDataFS(
+              idOrderPendienteToAceptado,
+              dataOrder
+            )
+          ).id
+        : (await ordersServices.postDataFS(dataOrder)).id;
+    } catch (error) {
+      console.error("Error: ", error);
+
+      let data: IBackLogs = {
+        date: new Date(),
+        userId: variablesGlobales.userId,
+        log: `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`,
+      };
+
+      backLogsServices
+        .postDataFS(data)
+        .then((res) => {})
+        .catch((err) => {
+          console.error(err);
+        });
+      throw error;
+    }
+
+    if (!(orderId || idOrderPendienteToAceptado)) {
       return res.status(500).json({
         error: `Error interno del servidor al guardar los datos de la orden`,
       }) as any;
     }
 
+    if (validoPendiente || validoRechazado || validoFallida) {
+      return res.status(200).json({ message: "Transaccion finalizada" }) as any;
+    }
+
     // Se envian los links de telegram en el siguiente middleware
     req.query = {}; // Limpiar el query para el siguiente endpoint
-    req.query.orderId = orderId;
+    req.query.orderId = orderId || idOrderPendienteToAceptado;
     req.query.auth = dataSave.token;
     req.query.date = dataSave.fecha;
 
