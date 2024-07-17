@@ -1,7 +1,10 @@
 export const environment = {
   port: 8080,
   frontUrl: "http://localhost:4200",
-  cors: ["https://sexifa-269bf.web.app"],
+  cors: [
+    "https://sexifa-269bf.web.app",
+    "https://66980c52e4e78917b57ba556--iridescent-gelato-9e75d6.netlify.app",
+  ],
   firebase: {
     type: "service_account",
     project_id: "sexifa-269bf",
