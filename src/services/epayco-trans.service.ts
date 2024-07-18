@@ -156,22 +156,12 @@ class EpaycoTransService {
           .limit(1)
           .get();
       } catch (error) {
-        let date: string = variablesGlobales.date.toISOString();
-        let data: IBackLogs = {
-          date: new Date(date),
-          userId: variablesGlobales.userId,
-          log: `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
+        backLogsServices.catchProcessError(
+          `Error: ${error}`,
+          `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
             error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.log("🚀 ~ Server ~ err:", err);
-            throw err;
-          });
+          )}`
+        );
 
         return null as any;
       }
@@ -185,22 +175,12 @@ class EpaycoTransService {
         ? await this.patchDataFS(idOrderInProcess, dataSave)
         : await this.postDataFS(dataSave);
     } catch (error) {
-      let date: string = variablesGlobales.date.toISOString();
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId: variablesGlobales.userId,
-        log: `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       return null as any;
     }

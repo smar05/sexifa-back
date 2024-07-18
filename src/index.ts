@@ -101,28 +101,12 @@ class Server {
         next();
       })
       .catch((error) => {
-        console.error(
-          "🚀 ~ file: index.ts ~ Server ~ verifyToken: Token invalido"
-        );
-
-        let { date }: { date: string } = req.query;
-        let data: IBackLogs = {
-          userId: "",
-          date: new Date(date),
-          log: `index.ts ~ Server ~ verifyToken ~ JSON.stringify(error): ${JSON.stringify(
+        backLogsServices.catchProcessError(
+          "🚀 ~ file: index.ts ~ Server ~ verifyToken: Token invalido",
+          `index.ts ~ Server ~ verifyToken ~ JSON.stringify(error): ${JSON.stringify(
             error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.log("🚀 ~ Server ~ err:", err);
-            throw err;
-          });
-
-        console.error(error);
+          )}`
+        );
 
         res.status(401).json({ error: "Token inválido" });
         return;
@@ -166,27 +150,12 @@ class Server {
       resUser = (await userServices.getDataFS().where("id", "==", userId).get())
         .docs[0];
     } catch (error) {
-      console.error(
-        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario no encontrado"
-      );
-
-      let { date }: { date: string } = req.query;
-      let userId: string = (req.user as DecodedIdToken).uid;
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId,
-        log: `file: index.ts: ~ Server ~ verifyUser ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario no encontrado",
+        `file: index.ts: ~ Server ~ verifyUser ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       res.status(401).json({ error: "Usuario no encontrado" });
 

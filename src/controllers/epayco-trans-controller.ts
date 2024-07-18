@@ -94,26 +94,14 @@ export class EpaycoTransController {
           .get()
       ).docs[0];
     } catch (error) {
-      console.error("Error: ", error);
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(error)}`
+      );
+
       res.status(500).json({
         error: `Ha ocurrido un error consultando epayco-trans`,
       });
-
-      let data: IBackLogs = {
-        date: new Date(),
-        userId: variablesGlobales.userId,
-        log: `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
-          error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.error(err);
-        });
-      throw error;
     }
     let epaycoBD: IEpaycoTransSend = resDb?.data() as any;
 
@@ -196,26 +184,16 @@ export class EpaycoTransController {
           res = await subscripcionsServices.postDataFS(data);
           resModel = await modelsServices.getItemFS(data.modelId).get();
         } catch (error) {
-          console.error("Error: ", error);
+          backLogsServices.catchProcessError(
+            `Error: ${error}`,
+            `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
+              error
+            )}`
+          );
+
           res.status(500).json({
             error: `Ha ocurrido un error guardando la subscripcion`,
           });
-
-          let data: IBackLogs = {
-            date: new Date(),
-            userId: variablesGlobales.userId,
-            log: `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
-              error
-            )}`,
-          };
-
-          backLogsServices
-            .postDataFS(data)
-            .then((res) => {})
-            .catch((err) => {
-              console.error(err);
-            });
-          throw error;
         }
 
         let model: Imodels = { id: resModel.id, ...resModel.data() };
@@ -240,23 +218,16 @@ export class EpaycoTransController {
         .limit(1)
         .get();
     } catch (error) {
-      console.error("Error: ", error);
-
-      let data: IBackLogs = {
-        date: new Date(),
-        userId: variablesGlobales.userId,
-        log: `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
+        )}`
+      );
 
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.error(err);
-        });
-      throw error;
+      res.status(500).json({
+        error: `Ha ocurrido un error consultando la orden`,
+      });
     }
 
     if (resPendienteToAceptado?.docs?.length == 1) {
@@ -366,23 +337,16 @@ export class EpaycoTransController {
           ).id
         : (await ordersServices.postDataFS(dataOrder)).id;
     } catch (error) {
-      console.error("Error: ", error);
-
-      let data: IBackLogs = {
-        date: new Date(),
-        userId: variablesGlobales.userId,
-        log: `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `EpaycoTransController ~ confirmTransaccion ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
+        )}`
+      );
 
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.error(err);
-        });
-      throw error;
+      res.status(500).json({
+        error: `Ha ocurrido un error guardando la orden`,
+      });
     }
 
     if (!(orderId || idOrderPendienteToAceptado)) {

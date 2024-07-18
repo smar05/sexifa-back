@@ -37,24 +37,12 @@ class TelegramServices {
     try {
       return await bot.telegram.sendMessage(userId, mensaje);
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ enviarMensajeBotAUsuario ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ enviarMensajeBotAUsuario ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
-      throw error;
+        )}`
+      );
     }
   }
 
@@ -76,24 +64,12 @@ class TelegramServices {
     try {
       bot.telegram.unbanChatMember(chatId, userId);
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ unbanChatMember ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ unbanChatMember ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
-      throw error;
+        )}`
+      );
     }
   }
 
@@ -151,24 +127,12 @@ class TelegramServices {
         revoke_messages: false,
       });
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ banChatMember ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ banChatMember ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
-      throw error;
+        )}`
+      );
     }
   }
 
@@ -200,23 +164,12 @@ class TelegramServices {
         (member.status === "member" || member.status === "administrator")
       );
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
+        )}`
+      );
 
       return false;
     }
@@ -253,23 +206,12 @@ class TelegramServices {
 
       return true;
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
+        )}`
+      );
 
       return false;
     }
