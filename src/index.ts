@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import telegramRoutes from "./routes/telegram_routes";
@@ -7,7 +7,6 @@ import admin from "firebase-admin";
 import userServices from "./services/user-service";
 import { Iuser } from "./interfaces/i-user";
 import { UserStatusEnum } from "./enums/user-status-enum";
-import { IBackLogs } from "./interfaces/i-back-logs";
 import backLogsServices from "./services/back-logs-service";
 import { VariablesGlobales, setVariablesGlobales } from "./variables-globales";
 import models_routes from "./routes/models_routes";
@@ -15,6 +14,8 @@ import { EnumUrlEnpoints } from "./enums/enum-url-enpoints";
 import epaycoTransRoutes from "./routes/epayco-trans-routes";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { IEpaycoTransRes } from "./interfaces/i-epayco-trans";
+import { setupCommands } from "./services/telegram-bot-command.service";
+import { Telegraf } from "telegraf";
 
 class Server {
   private app: Application;
@@ -25,6 +26,7 @@ class Server {
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: false, // habilitar el intercambio de cookies entre el cliente y el servidor
   };
+  private bot: Telegraf = new Telegraf(environment.tokenTelegraf); // Inicializa Telegraf
 
   constructor() {
     console.log("🚀 ~ file: index.ts ~ Server ~ constructor: Inicia");
@@ -45,13 +47,33 @@ class Server {
     console.log("🚀 ~ file: index.ts ~ Server ~ config: Inicia");
     this.app.set("port", environment.port || 8080); // Se establece el puerto para el back
     this.app.use(morgan("dev")); // Para mostrar por consola las peticiones http
-    this.app.use(cors(this.corsOptions)); // Para que el front pueda pedir los datos al back
     this.app.use(express.json()); // Aceptar formato JSON
     this.app.use(express.urlencoded({ extended: false }));
 
-    this.app.use(this.verifyToken);
-    this.app.use(this.verifyUser);
-    this.app.use(this.asignarVariablesGlobales);
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      let endpointComandos: string = `${this.API}/${EnumUrlEnpoints.urlComandosTelegram}`;
+
+      // Comandos desde telegram - no se usan cors
+      if (req.url.startsWith(endpointComandos)) {
+        console.log("🚀 ~ Server ~ this.app.use ~ req: Endpoint de comandos");
+        // No aplicar CORS para el webhook de Telegram
+        // Comandos configurados del bot
+        setupCommands(this.bot);
+
+        // Configura la ruta para el webhook
+        this.app.use(this.bot.webhookCallback(endpointComandos));
+
+        next();
+      } else {
+        console.log("🚀 ~ Server ~ this.app.use ~ req: Endpoint con cors");
+
+        cors(this.corsOptions)(req, res, () => {
+          this.verifyToken(req, res, next);
+          this.verifyUser(req, res, next);
+          this.asignarVariablesGlobales(req, res, next);
+        });
+      }
+    });
   }
 
   /**

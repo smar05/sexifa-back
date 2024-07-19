@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # Etapa de producción
-FROM node:16.16.0
+FROM node:20.0.0
 WORKDIR /app
 COPY --from=builder /app/build ./build
 COPY package*.json ./

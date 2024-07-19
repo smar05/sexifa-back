@@ -37,4 +37,5 @@ export const environment = {
     apiKey: "3ee3536f1a43c9102dd1f97b491a1a4d",
     privateKey: "40f61af9c1a1dec2ae658873674beaf1",
   },
+  urlServidor: "https://sexifa-back.onrender.com",
 };
