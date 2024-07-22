@@ -65,12 +65,24 @@ class Server {
 
         next();
       } else {
-        console.log("🚀 ~ Server ~ this.app.use ~ req: Endpoint con cors");
+        console.log("🚀 ~ Server ~ Endpoint con cors");
 
-        cors(this.corsOptions)(req, res, () => {
-          this.verifyToken(req, res, next);
-          this.verifyUser(req, res, next);
-          this.asignarVariablesGlobales(req, res, next);
+        // Configura CORS
+        cors(this.corsOptions)(req, res, (err: any) => {
+          if (err) {
+            return next(err);
+          }
+
+          // Ejecutar los middlewares de verificación secuencialmente
+          this.verifyToken(req, res, (err: any) => {
+            if (err) return next(err);
+
+            this.verifyUser(req, res, (err: any) => {
+              if (err) return next(err);
+
+              this.asignarVariablesGlobales(req, res, next);
+            });
+          });
         });
       }
     });
@@ -239,7 +251,7 @@ class Server {
     let userId: string = (req.user as DecodedIdToken)?.uid || "";
     let email: string = (req.user as DecodedIdToken)?.email || "";
     let vg: VariablesGlobales = {
-      date: new Date(date),
+      date: date ? new Date(date) : (null as any),
       userId: userId,
       email,
     };

@@ -100,10 +100,12 @@ class BackLogsService {
   public catchProcessError(consoleLog: string, log: string): void {
     console.error(consoleLog);
 
-    let date: string = variablesGlobales?.date?.toISOString();
+    let date: string = variablesGlobales.date
+      ? variablesGlobales.date.toISOString()
+      : "";
     let data: IBackLogs = {
       userId: variablesGlobales?.userId,
-      date: new Date(date),
+      date: date ? new Date(date) : (null as any),
       log,
     };
 
