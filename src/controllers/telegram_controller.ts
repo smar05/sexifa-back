@@ -485,13 +485,13 @@ class TelegramController {
       });
     }
 
-    if (res2.response && !res2.response.ok) {
+    if (!res2 || (res2.response && !res2.response.ok)) {
       res
         .json({
           mensaje: "Conexion erronea",
           code: 400,
         })
-        .status(res2.response.error_code);
+        .status(res2?.response.error_code || 400);
 
       return;
     }

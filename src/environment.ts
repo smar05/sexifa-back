@@ -3,7 +3,7 @@ export const environment = {
   frontUrl: "http://localhost:4200",
   cors: [
     "https://sexifa-269bf.web.app",
-    "https://66980c52e4e78917b57ba556--iridescent-gelato-9e75d6.netlify.app",
+    "https://669ad086017118af0fb7cde8--iridescent-gelato-9e75d6.netlify.app",
   ],
   firebase: {
     type: "service_account",
@@ -37,4 +37,5 @@ export const environment = {
     apiKey: "3ee3536f1a43c9102dd1f97b491a1a4d",
     privateKey: "40f61af9c1a1dec2ae658873674beaf1",
   },
+  urlServidor: "https://sexifa-back.onrender.com",
 };
