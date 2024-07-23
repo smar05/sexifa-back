@@ -399,7 +399,7 @@ class TelegramController {
 
       telegramServices.enviarMensajeBotAUsuario(
         user.chatId,
-        `Ha finalizado su subscripción al grupo: ${model.name}`
+        `Ha finalizado su subscripción al grupo: '${model.name}'`
       );
 
       subscripcionesCanceladas.push(idSubscription);
