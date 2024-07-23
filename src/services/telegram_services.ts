@@ -7,6 +7,7 @@ import {
   ChatMember,
   ChatMemberAdministrator,
   ChatMemberOwner,
+  UserFromGetMe,
 } from "telegraf/typings/core/types/typegram";
 
 class TelegramServices {
@@ -191,18 +192,24 @@ class TelegramServices {
     const bot: Telegraf = new Telegraf(environment.tokenTelegraf);
 
     try {
+      const botInfo: UserFromGetMe = await bot.telegram.getMe();
       let admins: (ChatMemberOwner | ChatMemberAdministrator)[] =
         await bot.telegram.getChatAdministrators(chatId);
-      console.log("🚀 ~ TelegramServices ~ member:", admins);
 
       if (!admins) return false;
 
       let botMember: ChatMemberAdministrator = admins.find(
         (admin: ChatMemberOwner | ChatMemberAdministrator) =>
-          admin.user.is_bot && admin.user.username === environment.userNameBot
+          admin.user.is_bot &&
+          admin.user.id === botInfo.id &&
+          admin.status === "administrator"
       ) as ChatMemberAdministrator;
 
       if (!botMember) return false;
+
+      // Validar que tenga permisos de añadir usuarios
+      if (!(botMember.can_restrict_members && botMember.can_invite_users))
+        return false;
 
       return true;
     } catch (error) {

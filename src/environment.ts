@@ -31,7 +31,6 @@ export const environment = {
     epayco_trans: "epayco_trans",
   },
   tokenTelegraf: "6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw",
-  userNameBot: "OnlyGramGroup_BOT",
   epayco: {
     idBusinnes: "1462767",
     apiKey: "3ee3536f1a43c9102dd1f97b491a1a4d",
