@@ -135,6 +135,23 @@ export function setupCommands(bot: Telegraf): void {
       return;
     }
 
+    if (
+      !(
+        groupData.type === "supergroup" ||
+        groupData.type === "private" ||
+        groupData.type === "channel" ||
+        groupData.type === "group"
+      )
+    ) {
+      console.log("🚀 ~ newChatMembers ~ groupData.type: No es un grupo");
+
+      await telegramServices.enviarMensajeBotAUsuario(
+        adminUser.user.id,
+        `Ha ocurrido un error con el grupo.`
+      );
+      return;
+    }
+
     // Enviar el id del grupo al dueño del grupo
     await telegramServices.enviarMensajeBotAUsuario(
       adminUser.user.id,
