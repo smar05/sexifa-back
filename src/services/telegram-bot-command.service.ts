@@ -115,9 +115,7 @@ export function setupCommands(bot: Telegraf): void {
     let adminUser: ChatMemberOwner | ChatMemberAdministrator =
       admins.find(
         (admin: ChatMemberOwner | ChatMemberAdministrator) =>
-          !admin.user.is_bot &&
-          !admin.is_anonymous &&
-          admin.status === "creator"
+          !admin.user.is_bot && admin.status === "creator"
       ) ||
       admins.find(
         (admin: ChatMemberOwner | ChatMemberAdministrator) =>
