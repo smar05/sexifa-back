@@ -16,6 +16,7 @@ import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { IEpaycoTransRes } from "./interfaces/i-epayco-trans";
 import { setupCommands } from "./services/telegram-bot-command.service";
 import { Telegraf } from "telegraf";
+import joiMiddlewareController from "./controllers/joimiddleware-controller";
 
 class Server {
   private app: Application;
@@ -49,6 +50,9 @@ class Server {
     this.app.use(morgan("dev")); // Para mostrar por consola las peticiones http
     this.app.use(express.json()); // Aceptar formato JSON
     this.app.use(express.urlencoded({ extended: false }));
+
+    // Validacion de datos obligatorios
+    this.app.use(joiMiddlewareController.validacionDatosObligatorios);
 
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       let endpointComandos: string = `${this.API}/${EnumUrlEnpoints.urlComandosTelegram}`;
