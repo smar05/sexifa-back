@@ -17,6 +17,7 @@ import { IEpaycoTransRes } from "./interfaces/i-epayco-trans";
 import { setupCommands } from "./services/telegram-bot-command.service";
 import { Telegraf } from "telegraf";
 import joiMiddlewareController from "./controllers/joimiddleware-controller";
+import encryptionController from "./controllers/encryption-controller";
 
 class Server {
   private app: Application;
@@ -51,10 +52,9 @@ class Server {
     this.app.use(express.json()); // Aceptar formato JSON
     this.app.use(express.urlencoded({ extended: false }));
 
-    // Validacion de datos obligatorios
-    this.app.use(joiMiddlewareController.validacionDatosObligatorios);
-
     this.app.use((req: Request, res: Response, next: NextFunction) => {
+      console.log("🚀 ~ Server ~ this.app.use ~ req.host:", req.get("host"));
+
       let endpointComandos: string = `${this.API}/${EnumUrlEnpoints.urlComandosTelegram}`;
 
       // Comandos desde telegram - no se usan cors
@@ -77,16 +77,32 @@ class Server {
             return next(err);
           }
 
-          // Ejecutar los middlewares de verificación secuencialmente
-          this.verifyToken(req, res, (err: any) => {
-            if (err) return next(err);
+          if (
+            req.url.includes("/api/epayco-trans/confirmacion") &&
+            req.method === "POST"
+          ) {
+            req.query.auth = (req.query as any).x_extra1;
+            req.query.date = (req.query as any).x_extra2;
+          }
 
-            this.verifyUser(req, res, (err: any) => {
-              if (err) return next(err);
+          joiMiddlewareController.validacionDatosObligatorios(
+            req,
+            res,
+            (err: any) => {
+              encryptionController.desencriptarDatos(req, res, (err: any) => {
+                // Ejecutar los middlewares de verificación secuencialmente
+                this.verifyToken(req, res, (err: any) => {
+                  if (err) return next(err);
 
-              this.asignarVariablesGlobales(req, res, next);
-            });
-          });
+                  this.verifyUser(req, res, (err: any) => {
+                    if (err) return next(err);
+
+                    this.asignarVariablesGlobales(req, res, next);
+                  });
+                });
+              });
+            }
+          );
         });
       }
     });

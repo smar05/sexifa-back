@@ -46,19 +46,11 @@ export class JoiMiddlewareService {
    */
   static validarDatos(
     camposAValidar: object | any,
-    datosAValidar: { [key: string]: any },
-    url: string = null as any,
-    origin: string = null as any
+    datosAValidar: { [key: string]: any }
   ): Joi.ValidationError | undefined {
     console.log(
       "🚀 ~ file: joiMiddleware-service.ts ~ JoiMiddlewareService ~ validarDatos: Inicia"
     );
-
-    // Si la url es para comunicar bot con cliente desde registro, se omite la validacion
-    if (!url?.includes("comunicar-bot-cliente") || origin !== "register") {
-      camposAValidar.auth = Joi.string().required();
-      camposAValidar.date = Joi.string().required();
-    }
 
     // Define el esquema de validación con Joi
     const schema = Joi.object(camposAValidar);

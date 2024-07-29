@@ -55,7 +55,10 @@ class TelegramServices {
    * @return {*}  {void}
    * @memberof TelegramServices
    */
-  public unbanChatMember(chatId: string | number, userId: number): void {
+  public async unbanChatMember(
+    chatId: string | number,
+    userId: number
+  ): Promise<void> {
     console.log(
       "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ unbanChatMember: Inicia para el chatId: " +
         chatId
@@ -63,7 +66,7 @@ class TelegramServices {
     const bot = new Telegraf(environment.tokenTelegraf);
 
     try {
-      bot.telegram.unbanChatMember(chatId, userId);
+      await bot.telegram.unbanChatMember(chatId, userId);
     } catch (error) {
       backLogsServices.catchProcessError(
         `Error: ${error}`,

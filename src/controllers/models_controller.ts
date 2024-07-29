@@ -30,7 +30,7 @@ class ModelsController {
     // Validacion de datos
     let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
       { prices: Joi.string().required(), fechaActual: Joi.string().required() },
-      req.query
+      { prices: req.query.prices, fechaActual: req.query.fechaActual }
     );
 
     if (resultadoValidacionError) {
@@ -44,7 +44,20 @@ class ModelsController {
         .json({ error: resultadoValidacionError.details[0].message }) as any;
     }
 
-    let prices: IpriceModel[] = JSON.parse(req.query.prices as string);
+    let prices: IpriceModel[] = (
+      JSON.parse(req.query.prices as string) as string[]
+    ).map((d: string) => {
+      let res = null;
+
+      try {
+        res = JSON.parse(d);
+      } catch (error) {
+        res = d;
+      }
+
+      return res;
+    });
+    console.log("🚀 ~ ModelsController ~ prices:", prices);
     let fechaActual: Date = new Date(req.query.fechaActual as string);
     let preciosCalculados: (number | undefined)[] = [];
 
