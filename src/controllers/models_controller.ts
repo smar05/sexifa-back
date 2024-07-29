@@ -57,7 +57,6 @@ class ModelsController {
 
       return res;
     });
-    console.log("🚀 ~ ModelsController ~ prices:", prices);
     let fechaActual: Date = new Date(req.query.fechaActual as string);
     let preciosCalculados: (number | undefined)[] = [];
 

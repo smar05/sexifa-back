@@ -44,7 +44,7 @@ export function setupCommands(bot: Telegraf): void {
    * @param {*} ctx
    * @return {*}  {Promise<void>}
    */
-  async function newChatMembers(ctx: any): Promise<void> {
+  async function newChatMemberBot(ctx: any): Promise<void> {
     console.log("🚀 ~ newChatMembers ~ Inicia");
 
     const newMembers: User[] = ctx.message?.new_chat_members;
@@ -60,6 +60,18 @@ export function setupCommands(bot: Telegraf): void {
           error
         )}`
       );
+    }
+
+    // Verificar si el bot es el nuevo miembro añadido
+    const botAdded: boolean = newMembers.some(
+      (member: User) => member.id === botId && member.is_bot
+    );
+
+    if (!botAdded) {
+      console.log(
+        "🚀 ~ newChatMembers ~ botAdded: No se ha añadido el bot al grupo"
+      );
+      return;
     }
 
     if (!groupId) {
@@ -83,19 +95,6 @@ export function setupCommands(bot: Telegraf): void {
           error
         )}`
       );
-    }
-
-    // Verificar si el bot es el nuevo miembro añadido
-    const botAdded: boolean = newMembers.some(
-      (member: User) => member.id === botId && member.is_bot
-    );
-
-    if (!botAdded) {
-      console.log(
-        "🚀 ~ newChatMembers ~ botAdded: No se ha añadido el bot al grupo"
-      );
-      ctx.reply(`Ha ocurrido un error añadiendo el bot al grupo`);
-      return;
     }
 
     // Buscar un creador o administrador del grupo
@@ -168,7 +167,7 @@ export function setupCommands(bot: Telegraf): void {
 
   // Manejar el evento cuando el bot sea añadido a un grupo
   bot.on("new_chat_members", async (ctx: any) => {
-    newChatMembers(ctx);
+    newChatMemberBot(ctx);
   });
 
   // Comando start
