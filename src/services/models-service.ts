@@ -12,8 +12,6 @@ import {
   TypeOfferEnum,
 } from "../interfaces/i-price-model";
 import { Isubscriptions } from "../interfaces/i-subscriptions";
-import { IBackLogs } from "../interfaces/i-back-logs";
-import { variablesGlobales } from "../variables-globales";
 import backLogsServices from "./back-logs-service";
 
 class ModelsService {

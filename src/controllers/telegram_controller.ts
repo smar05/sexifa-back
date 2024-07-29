@@ -42,7 +42,7 @@ class TelegramController {
       {
         orderId: Joi.string().required(),
       },
-      req.query
+      { orderId: req.query.orderId }
     );
 
     if (resultadoValidacionError) {
@@ -183,7 +183,7 @@ class TelegramController {
 
     for (const model of models) {
       // Habilitar al usuario al chat
-      telegramServices.unbanChatMember(model.groupId, user.chatId);
+      await telegramServices.unbanChatMember(model.groupId, user.chatId);
 
       // Crear el link
       let inviteLink: string = "";
@@ -191,7 +191,7 @@ class TelegramController {
       try {
         inviteLink = await telegramServices.createChatInviteLink(
           model.groupId,
-          expireDate,
+          0, //expireDate,
           1
         );
       } catch (error) {
@@ -205,6 +205,8 @@ class TelegramController {
         res.status(500).json({
           error: `Error interno del servidor al crear el link de invitacion para el grupo ${model.groupId}`,
         });
+
+        inviteLink = null as any;
       }
 
       links.set(model.name, inviteLink);
@@ -214,7 +216,11 @@ class TelegramController {
     let mensajeBot: string =
       "Se han generado los siguientes links de acceso. \n \n";
     for (const key of links.keys()) {
-      mensajeBot += `Grupo: ${key}\nLink de Acceso: ${links.get(key)}\n\n`;
+      if (links.get(key)) {
+        mensajeBot += `Grupo: ${key}\nLink de Acceso: ${links.get(key)}\n\n`;
+      } else {
+        mensajeBot += `Ha ocurrido un error generando el link de acceso del Grupo: ${key}. Por favor contacte a un asesor.\n\n`;
+      }
     }
 
     mensajeBot += `Los links vencen a las: ${new Date(
@@ -292,7 +298,7 @@ class TelegramController {
       {
         fecha: Joi.string().required(),
       },
-      req.query
+      { fecha: req.query.fecha }
     );
 
     if (resultadoValidacionError) {
@@ -442,14 +448,13 @@ class TelegramController {
     );
 
     // Validacion de datos
+    let { fromId, url } = req.query;
     let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
       {
         fromId: Joi.string().required(),
         url: Joi.string(),
       },
-      req.query,
-      req.url,
-      req.query.url as string
+      { fromId, url }
     );
 
     if (resultadoValidacionError) {
@@ -523,7 +528,7 @@ class TelegramController {
         chatId: Joi.string().required(),
         fromId: Joi.string().required(),
       },
-      req.query
+      { chatId: req.query.chatId, fromId: req.query.fromId }
     );
 
     if (resultadoValidacionError) {
@@ -596,7 +601,7 @@ class TelegramController {
       {
         chatId: Joi.string().required(),
       },
-      req.query
+      { chatId: req.query.chatId }
     );
 
     if (resultadoValidacionError) {
