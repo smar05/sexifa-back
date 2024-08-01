@@ -16,6 +16,9 @@ import Joi from "joi";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "../services/back-logs-service";
 import { variablesGlobales } from "../variables-globales";
+import businessParamsService, {
+  EnumBusinessParamsKeys,
+} from "../services/business-params.service";
 
 class TelegramController {
   constructor() {
@@ -292,6 +295,38 @@ class TelegramController {
     console.log(
       "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ quitarAcceso: Inicia"
     );
+
+    // Validar correo admin
+    let resp: DocumentSnapshot = null as any;
+
+    try {
+      resp = await businessParamsService
+        .getItemFS(EnumBusinessParamsKeys.ADMIN)
+        .get();
+    } catch (error) {
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+          error
+        )}`
+      );
+
+      res.status(500).json({
+        error: `Error interno del servidor al consultar el correo admin`,
+      });
+
+      return;
+    }
+
+    let email: string = resp.data()?.email || null;
+
+    if (!email || email != variablesGlobales.email) {
+      res.status(400).json({
+        error: `El correo no tiene permisos de adminsitrador`,
+      });
+
+      return;
+    }
 
     // Validacion de datos
     let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(

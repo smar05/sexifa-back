@@ -31,6 +31,7 @@ export const environment = {
     orders: "orders",
     back_logs: "back_logs",
     epayco_trans: "epayco_trans",
+    business_params: "business_params",
   },
   tokenTelegraf: "6945369435:AAEhDdAb_9SIu4Vju1r3mcROq-Ok06W-npw",
   epayco: {
