@@ -1,5 +1,5 @@
 # Etapa de compilación
-FROM node:16.16.0 as builder
+FROM node:20.0.0 as builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # Etapa de producción
-FROM node:16.16.0
+FROM node:20.0.0
 WORKDIR /app
 COPY --from=builder /app/build ./build
 COPY package*.json ./

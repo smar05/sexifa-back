@@ -12,8 +12,6 @@ import {
   TypeOfferEnum,
 } from "../interfaces/i-price-model";
 import { Isubscriptions } from "../interfaces/i-subscriptions";
-import { IBackLogs } from "../interfaces/i-back-logs";
-import { variablesGlobales } from "../variables-globales";
 import backLogsServices from "./back-logs-service";
 
 class ModelsService {
@@ -185,23 +183,10 @@ class ModelsService {
 
         await this.patchDataFS(dataModelId, dataModelUpdate);
       } catch (error) {
-        console.error("Error: ", error);
-
-        let data: IBackLogs = {
-          date: new Date(),
-          userId: variablesGlobales.userId,
-          log: `ModelsService ~ reducirComprasPromocion: ${JSON.stringify(
-            error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.error(err);
-          });
-        throw error;
+        backLogsServices.catchProcessError(
+          `Error: ${error}`,
+          `ModelsService ~ reducirComprasPromocion: ${JSON.stringify(error)}`
+        );
       }
     }
   }

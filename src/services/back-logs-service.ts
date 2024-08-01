@@ -6,6 +6,7 @@ import {
 import { environment } from "../environment";
 import { FireStorageService } from "./firestorage-service";
 import { IBackLogs } from "../interfaces/i-back-logs";
+import { variablesGlobales } from "../variables-globales";
 
 class BackLogsService {
   private urlBackLogs: string = environment.urlCollections.back_logs;
@@ -87,6 +88,34 @@ class BackLogsService {
       `🚀 ~ file: back-logs-service.ts: ~ BackLogsService ~ deleteDataFS: Inicia Doc: ${doc}`
     );
     return this.fireStorageService.delete(this.urlBackLogs, doc);
+  }
+
+  /**
+   * Metodo general para manejar los catch
+   *
+   * @param {string} consoleLog
+   * @param {string} log
+   * @memberof BackLogsService
+   */
+  public catchProcessError(consoleLog: string, log: string): void {
+    console.error(consoleLog);
+
+    let date: string = variablesGlobales.date
+      ? variablesGlobales.date.toISOString()
+      : "";
+    let data: IBackLogs = {
+      userId: variablesGlobales?.userId,
+      date: date ? new Date(date) : (null as any),
+      log,
+    };
+
+    backLogsServices
+      .postDataFS(data)
+      .then((res) => {})
+      .catch((err) => {
+        console.log("🚀 ~ Server ~ err:", err);
+        throw err;
+      });
   }
 
   //------------ FireStorage---------------//

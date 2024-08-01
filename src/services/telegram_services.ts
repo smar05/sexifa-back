@@ -7,6 +7,7 @@ import {
   ChatMember,
   ChatMemberAdministrator,
   ChatMemberOwner,
+  UserFromGetMe,
 } from "telegraf/typings/core/types/typegram";
 
 class TelegramServices {
@@ -37,24 +38,12 @@ class TelegramServices {
     try {
       return await bot.telegram.sendMessage(userId, mensaje);
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ enviarMensajeBotAUsuario ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ enviarMensajeBotAUsuario ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
-      throw error;
+        )}`
+      );
     }
   }
 
@@ -66,7 +55,10 @@ class TelegramServices {
    * @return {*}  {void}
    * @memberof TelegramServices
    */
-  public unbanChatMember(chatId: string | number, userId: number): void {
+  public async unbanChatMember(
+    chatId: string | number,
+    userId: number
+  ): Promise<void> {
     console.log(
       "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ unbanChatMember: Inicia para el chatId: " +
         chatId
@@ -74,26 +66,14 @@ class TelegramServices {
     const bot = new Telegraf(environment.tokenTelegraf);
 
     try {
-      bot.telegram.unbanChatMember(chatId, userId);
+      await bot.telegram.unbanChatMember(chatId, userId);
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ unbanChatMember ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ unbanChatMember ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
-      throw error;
+        )}`
+      );
     }
   }
 
@@ -151,24 +131,12 @@ class TelegramServices {
         revoke_messages: false,
       });
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ banChatMember ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ banChatMember ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
-      throw error;
+        )}`
+      );
     }
   }
 
@@ -200,23 +168,12 @@ class TelegramServices {
         (member.status === "member" || member.status === "administrator")
       );
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
+        )}`
+      );
 
       return false;
     }
@@ -238,38 +195,33 @@ class TelegramServices {
     const bot: Telegraf = new Telegraf(environment.tokenTelegraf);
 
     try {
+      const botInfo: UserFromGetMe = await bot.telegram.getMe();
       let admins: (ChatMemberOwner | ChatMemberAdministrator)[] =
         await bot.telegram.getChatAdministrators(chatId);
-      console.log("🚀 ~ TelegramServices ~ member:", admins);
 
       if (!admins) return false;
 
       let botMember: ChatMemberAdministrator = admins.find(
         (admin: ChatMemberOwner | ChatMemberAdministrator) =>
-          admin.user.is_bot && admin.user.username === environment.userNameBot
+          admin.user.is_bot &&
+          admin.user.id === botInfo.id &&
+          admin.status === "administrator"
       ) as ChatMemberAdministrator;
 
       if (!botMember) return false;
 
+      // Validar que tenga permisos de añadir usuarios
+      if (!(botMember.can_restrict_members && botMember.can_invite_users))
+        return false;
+
       return true;
     } catch (error) {
-      let data: IBackLogs = {
-        userId: variablesGlobales.userId,
-        date: variablesGlobales.date,
-        log: `TelegramServices ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramServices ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
-
-      console.error(error);
+        )}`
+      );
 
       return false;
     }

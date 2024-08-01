@@ -37,22 +37,12 @@ class EpaycoSdkService {
     try {
       res = await this.epayco.charge.get(refPayco);
     } catch (error) {
-      let date: string = variablesGlobales.date.toISOString();
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId: variablesGlobales.userId,
-        log: `EpaycoSdkService ~ validarTransaccion ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `EpaycoSdkService ~ validarTransaccion ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       return null as any;
     }

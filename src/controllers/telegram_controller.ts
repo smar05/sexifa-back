@@ -42,7 +42,7 @@ class TelegramController {
       {
         orderId: Joi.string().required(),
       },
-      req.query
+      { orderId: req.query.orderId }
     );
 
     if (resultadoValidacionError) {
@@ -64,27 +64,16 @@ class TelegramController {
     try {
       res1 = await ordersServices.getItemFS(orderId).get();
     } catch (error) {
-      let { date }: { date: string } = req.query as any;
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId: variablesGlobales.userId,
-        log: `TelegramController ~ enviarLinkr ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramController ~ enviarLinkr ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para la orden ${orderId}`,
       });
-      throw error;
     }
 
     let order: Iorders = res1.data();
@@ -109,27 +98,16 @@ class TelegramController {
         await userServices.getDataFS().where("id", "==", order.userId).get()
       ).docs[0];
     } catch (error) {
-      let { date }: { date: string } = req.query as any;
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId: variablesGlobales.userId,
-        log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para el usuario ${order.userId}`,
       });
-      throw error;
     }
 
     let user: Iuser = res4.data();
@@ -146,27 +124,16 @@ class TelegramController {
       try {
         res2 = await subscripcionsServices.getItemFS(idSubscription).get();
       } catch (error) {
-        let { date }: { date: string } = req.query as any;
-        let data: IBackLogs = {
-          date: new Date(date),
-          userId: variablesGlobales.userId,
-          log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+        backLogsServices.catchProcessError(
+          `Error: ${error}`,
+          `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
             error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.log("🚀 ~ Server ~ err:", err);
-            throw err;
-          });
+          )}`
+        );
 
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para la subscripcion ${idSubscription}`,
         });
-        throw error;
       }
 
       let subscription: Isubscriptions = res2.data();
@@ -185,27 +152,16 @@ class TelegramController {
         try {
           res3 = await modelsServices.getItemFS(subscription.modelId).get();
         } catch (error) {
-          let { date }: { date: string } = req.query as any;
-          let data: IBackLogs = {
-            date: new Date(date),
-            userId: variablesGlobales.userId,
-            log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+          backLogsServices.catchProcessError(
+            `Error: ${error}`,
+            `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
               error
-            )}`,
-          };
-
-          backLogsServices
-            .postDataFS(data)
-            .then((res) => {})
-            .catch((err) => {
-              console.log("🚀 ~ Server ~ err:", err);
-              throw err;
-            });
+            )}`
+          );
 
           res.status(500).json({
             error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
           });
-          throw error;
         }
 
         let model: Imodels = res3.data();
@@ -227,7 +183,7 @@ class TelegramController {
 
     for (const model of models) {
       // Habilitar al usuario al chat
-      telegramServices.unbanChatMember(model.groupId, user.chatId);
+      await telegramServices.unbanChatMember(model.groupId, user.chatId);
 
       // Crear el link
       let inviteLink: string = "";
@@ -235,31 +191,22 @@ class TelegramController {
       try {
         inviteLink = await telegramServices.createChatInviteLink(
           model.groupId,
-          expireDate,
+          0, //expireDate,
           1
         );
       } catch (error) {
-        let { date }: { date: string } = req.query as any;
-        let data: IBackLogs = {
-          date: new Date(date),
-          userId: variablesGlobales.userId,
-          log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+        backLogsServices.catchProcessError(
+          `Error: ${error}`,
+          `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
             error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.log("🚀 ~ Server ~ err:", err);
-            throw err;
-          });
+          )}`
+        );
 
         res.status(500).json({
           error: `Error interno del servidor al crear el link de invitacion para el grupo ${model.groupId}`,
         });
-        throw error;
+
+        inviteLink = null as any;
       }
 
       links.set(model.name, inviteLink);
@@ -269,7 +216,11 @@ class TelegramController {
     let mensajeBot: string =
       "Se han generado los siguientes links de acceso. \n \n";
     for (const key of links.keys()) {
-      mensajeBot += `Grupo: ${key}\nLink de Acceso: ${links.get(key)}\n\n`;
+      if (links.get(key)) {
+        mensajeBot += `Grupo: ${key}\nLink de Acceso: ${links.get(key)}\n\n`;
+      } else {
+        mensajeBot += `Ha ocurrido un error generando el link de acceso del Grupo: ${key}. Por favor contacte a un asesor.\n\n`;
+      }
     }
 
     mensajeBot += `Los links vencen a las: ${new Date(
@@ -288,27 +239,16 @@ class TelegramController {
         try {
           await subscripcionsServices.patchDataFS(id, subscription);
         } catch (error) {
-          let { date }: { date: string } = req.query as any;
-          let data: IBackLogs = {
-            date: new Date(date),
-            userId: variablesGlobales.userId,
-            log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+          backLogsServices.catchProcessError(
+            `Error: ${error}`,
+            `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
               error
-            )}`,
-          };
-
-          backLogsServices
-            .postDataFS(data)
-            .then((res) => {})
-            .catch((err) => {
-              console.log("🚀 ~ Server ~ err:", err);
-              throw err;
-            });
+            )}`
+          );
 
           res.status(500).json({
             error: `Error interno del servidor al actualizar la subscripcion ${subscription.id}`,
           });
-          throw error;
         }
       }
     }
@@ -322,27 +262,16 @@ class TelegramController {
       try {
         await ordersServices.patchDataFS(id, order);
       } catch (error) {
-        let { date }: { date: string } = req.query as any;
-        let data: IBackLogs = {
-          date: new Date(date),
-          userId: variablesGlobales.userId,
-          log: `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
+        backLogsServices.catchProcessError(
+          `Error: ${error}`,
+          `TelegramController ~ enviarLink ~ JSON.stringify(error): ${JSON.stringify(
             error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.log("🚀 ~ Server ~ err:", err);
-            throw err;
-          });
+          )}`
+        );
 
         res.status(500).json({
           error: `Error interno del servidor al actualizar la orden ${id}`,
         });
-        throw error;
       }
     }
 
@@ -369,7 +298,7 @@ class TelegramController {
       {
         fecha: Joi.string().required(),
       },
-      req.query
+      { fecha: req.query.fecha }
     );
 
     if (resultadoValidacionError) {
@@ -402,27 +331,16 @@ class TelegramController {
         return s;
       });
     } catch (error) {
-      let { date }: { date: string } = req.query as any;
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId: variablesGlobales.userId,
-        log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       res.status(500).json({
         error: `Error interno del servidor al consultar la base de datos para las subscripciones`,
       });
-      throw error;
     }
 
     let subscripcionesCanceladas: string[] = [];
@@ -438,27 +356,16 @@ class TelegramController {
             .get()
         ).docs[0];
       } catch (error) {
-        let { date }: { date: string } = req.query as any;
-        let data: IBackLogs = {
-          date: new Date(date),
-          userId: variablesGlobales.userId,
-          log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+        backLogsServices.catchProcessError(
+          `Error: ${error}`,
+          `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
             error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.log("🚀 ~ Server ~ err:", err);
-            throw err;
-          });
+          )}`
+        );
 
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para el usuario ${subscription.userId}`,
         });
-        throw error;
       }
 
       let user: Iuser = resUser.data();
@@ -467,27 +374,16 @@ class TelegramController {
       try {
         resModel = await modelsServices.getItemFS(subscription.modelId).get();
       } catch (error) {
-        let { date }: { date: string } = req.query as any;
-        let data: IBackLogs = {
-          date: new Date(date),
-          userId: variablesGlobales.userId,
-          log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+        backLogsServices.catchProcessError(
+          `Error: ${error}`,
+          `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
             error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.log("🚀 ~ Server ~ err:", err);
-            throw err;
-          });
+          )}`
+        );
 
         res.status(500).json({
           error: `Error interno del servidor al consultar la base de datos para la modelo ${subscription.modelId}`,
         });
-        throw error;
       }
 
       let model: Imodels = resModel.data();
@@ -509,7 +405,7 @@ class TelegramController {
 
       telegramServices.enviarMensajeBotAUsuario(
         user.chatId,
-        `Ha finalizado su subscripción al grupo: ${model.name}`
+        `Ha finalizado su subscripción al grupo: '${model.name}'`
       );
 
       subscripcionesCanceladas.push(idSubscription);
@@ -520,27 +416,16 @@ class TelegramController {
           dataSubscription
         );
       } catch (error) {
-        let { date }: { date: string } = req.query as any;
-        let data: IBackLogs = {
-          date: new Date(date),
-          userId: variablesGlobales.userId,
-          log: `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
+        backLogsServices.catchProcessError(
+          `Error: ${error}`,
+          `TelegramController ~ quitarAcceso ~ JSON.stringify(error): ${JSON.stringify(
             error
-          )}`,
-        };
-
-        backLogsServices
-          .postDataFS(data)
-          .then((res) => {})
-          .catch((err) => {
-            console.log("🚀 ~ Server ~ err:", err);
-            throw err;
-          });
+          )}`
+        );
 
         res.status(500).json({
           error: `Error interno del servidor al actualizar la base de datos para la subscripcion ${idSubscription}`,
         });
-        throw error;
       }
     }
 
@@ -563,14 +448,13 @@ class TelegramController {
     );
 
     // Validacion de datos
+    let { fromId, url } = req.query;
     let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
       {
         fromId: Joi.string().required(),
         url: Joi.string(),
       },
-      req.query,
-      req.url,
-      req.query.url as string
+      { fromId, url }
     );
 
     if (resultadoValidacionError) {
@@ -594,36 +478,25 @@ class TelegramController {
         "¡Hola! Soy el bot de OnlyGram"
       );
     } catch (error) {
-      let { date }: { date: string } = req.query as any;
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId: variablesGlobales.userId,
-        log: `TelegramController ~ comunicarBotCliente ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramController ~ comunicarBotCliente ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       res.status(500).json({
         error: `Error interno del servidor al comunicar el bot con el usuario ${userId}`,
       });
-      throw error;
     }
 
-    if (res2.response && !res2.response.ok) {
+    if (!res2 || (res2.response && !res2.response.ok)) {
       res
         .json({
           mensaje: "Conexion erronea",
           code: 400,
         })
-        .status(res2.response.error_code);
+        .status(res2?.response.error_code || 400);
 
       return;
     }
@@ -655,7 +528,7 @@ class TelegramController {
         chatId: Joi.string().required(),
         fromId: Joi.string().required(),
       },
-      req.query
+      { chatId: req.query.chatId, fromId: req.query.fromId }
     );
 
     if (resultadoValidacionError) {
@@ -677,27 +550,16 @@ class TelegramController {
     try {
       res2 = await telegramServices.esMiembroDelGrupo(chatId, fromId);
     } catch (error) {
-      let { date }: { date: string } = req.query as any;
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId: variablesGlobales.userId,
-        log: `TelegramController ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramController ~ esMiembroDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       res.status(500).json({
         error: `Error interno del servidor al comunicar el bot con el usuario ${variablesGlobales.userId}`,
       });
-      throw error;
     }
 
     if (!res2) {
@@ -739,7 +601,7 @@ class TelegramController {
       {
         chatId: Joi.string().required(),
       },
-      req.query
+      { chatId: req.query.chatId }
     );
 
     if (resultadoValidacionError) {
@@ -760,27 +622,16 @@ class TelegramController {
     try {
       res2 = await telegramServices.botEsAdminDelGrupo(chatId);
     } catch (error) {
-      let { date }: { date: string } = req.query as any;
-      let data: IBackLogs = {
-        date: new Date(date),
-        userId: variablesGlobales.userId,
-        log: `TelegramController ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
+      backLogsServices.catchProcessError(
+        `Error: ${error}`,
+        `TelegramController ~ botEsAdminDelGrupo ~ JSON.stringify(error): ${JSON.stringify(
           error
-        )}`,
-      };
-
-      backLogsServices
-        .postDataFS(data)
-        .then((res) => {})
-        .catch((err) => {
-          console.log("🚀 ~ Server ~ err:", err);
-          throw err;
-        });
+        )}`
+      );
 
       res.status(500).json({
         error: `Error interno del servidor al comunicar el bot con el usuario ${variablesGlobales.userId}`,
       });
-      throw error;
     }
 
     if (!res2) {
