@@ -9,4 +9,5 @@ export interface Isubscriptions {
   endTime: string;
   payMethod: string;
   date_created: string;
+  commission: number;
 }

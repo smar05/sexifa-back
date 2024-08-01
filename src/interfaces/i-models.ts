@@ -10,4 +10,5 @@ export interface Imodels {
   groupId: string;
   gallery?: string;
   idUser?: string;
+  commission: number;
 }

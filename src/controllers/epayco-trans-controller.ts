@@ -161,6 +161,37 @@ export class EpaycoTransController {
     // Se procesan las subscripciones solo si la transaccion es valida
     if (validoAceptado) {
       for (const subCart of cart) {
+        let resModel: DocumentSnapshot | any = null;
+
+        try {
+          resModel = await modelsServices
+            .getItemFS(subCart.infoModelSubscription.idModel)
+            .get();
+        } catch (error) {
+          backLogsServices.catchProcessError(
+            `Error: ${error}`,
+            `EpaycoTransController ~ confirmTransaccion: ${JSON.stringify(
+              error
+            )}`
+          );
+
+          res.status(500).json({
+            error: `Ha ocurrido un error obteniendo el modelo`,
+          });
+
+          return;
+        }
+
+        if (!(resModel && resModel.id)) {
+          res.status(500).json({
+            error: `Ha ocurrido un error obteniendo el modelo`,
+          });
+
+          return;
+        }
+
+        let model: Imodels = { id: resModel.id, ...resModel.data() };
+
         let endTime: Date = Helpers.incrementarMeses(
           timeNow,
           subCart.infoModelSubscription.timeSubscription
@@ -175,14 +206,13 @@ export class EpaycoTransController {
           endTime: endTime.toISOString().split("T")[0],
           date_created: dataSave.fecha,
           payMethod: EnumPayMethods.EPAYCO,
+          commission: model.commission || 0.1,
         };
 
-        let res: any = null;
-        let resModel: DocumentSnapshot | any = null;
+        let resp: any = null;
 
         try {
-          res = await subscripcionsServices.postDataFS(data);
-          resModel = await modelsServices.getItemFS(data.modelId).get();
+          resp = await subscripcionsServices.postDataFS(data);
         } catch (error) {
           backLogsServices.catchProcessError(
             `Error: ${error}`,
@@ -194,11 +224,11 @@ export class EpaycoTransController {
           res.status(500).json({
             error: `Ha ocurrido un error guardando la subscripcion`,
           });
+
+          return;
         }
 
-        let model: Imodels = { id: resModel.id, ...resModel.data() };
-
-        idsSubscriptions.push(res.id);
+        idsSubscriptions.push(resp.id);
 
         // Reducir la compra si esta en promocion
         await modelsServices.reducirComprasPromocion(data, model);
