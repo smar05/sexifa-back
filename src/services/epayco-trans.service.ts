@@ -15,6 +15,7 @@ import { variablesGlobales } from "../variables-globales";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "./back-logs-service";
 import { EnumEpaycoResponse } from "../enums/enum-epayco-response";
+import encryptionService from "./encryption.service";
 
 class EpaycoTransService {
   private urlEpaycoTrans: string = environment.urlCollections.epayco_trans;
@@ -95,6 +96,22 @@ class EpaycoTransService {
   public async saveEpaycoTrans(
     data: IEpaycoTransRes
   ): Promise<IEpaycoTransSend> {
+    // Desencriptar el carrito
+    const cart: string = JSON.stringify(
+      JSON.parse(data.x_extra3).map(
+        (subCart: { infoModelSubscription: string; price: string }) => {
+          // Desencriptar los datos
+          let { infoModelSubscription, price } =
+            encryptionService.decryptDataJson(subCart) as any;
+
+          return {
+            infoModelSubscription: JSON.parse(infoModelSubscription),
+            price: Number(price),
+          };
+        }
+      )
+    );
+
     // Guardar informacion para consultarse en el front
     let dataSave: IEpaycoTransSend = {
       status:
@@ -143,7 +160,7 @@ class EpaycoTransService {
       token: data.x_extra1, // Token
       fecha: data.x_extra2, // Fecha
       userId: variablesGlobales.userId,
-      cart: data.x_extra3,
+      cart,
     };
 
     let idOrderInProcess: string = null as any;
