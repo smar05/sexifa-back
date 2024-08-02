@@ -297,6 +297,11 @@ class Server {
       `${this.API}/${EnumUrlEnpoints.urlEpaycoTrans}`,
       epaycoTransRoutes
     );
+
+    // Validar conexion con el back
+    this.app.get(`${this.API}/ping`, (req: Request, res: Response) => {
+      res.status(200).json({ message: "pong", connection: true });
+    });
   }
 
   /**
