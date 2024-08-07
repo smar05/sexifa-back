@@ -23,7 +23,7 @@ import { EnumConsoleLogColors } from "./enums/enum-console-log-colors";
 
 class Server {
   private app: Application;
-  private API: string = "/api";
+  private API: string = "/v1-0-0/api";
   private bodyParser = require("body-parser");
   private corsOptions: { [key: string]: any } = {
     origin: [environment.frontUrl, ...environment.cors], // o '*' para permitir cualquier origen
@@ -91,7 +91,7 @@ class Server {
           }
 
           if (
-            req.url.includes("/api/epayco-trans/confirmacion") &&
+            req.url.includes(`${this.API}/epayco-trans/confirmacion`) &&
             req.method === "POST"
           ) {
             req.query.auth = (req.query as any).x_extra1;
@@ -148,7 +148,7 @@ class Server {
     let token: string = null as any;
 
     if (
-      req.url.includes("/api/epayco-trans/confirmacion") &&
+      req.url.includes(`${this.API}/epayco-trans/confirmacion`) &&
       req.method === "POST"
     ) {
       token = (req.query as IEpaycoTransRes).x_extra1;
@@ -220,7 +220,7 @@ class Server {
       Helpers.consoleLog(
         "~ file: index.ts: ~ Server ~ verifyUser: Consulta del usuario " +
           userId,
-        EnumConsoleLogColors.ERROR
+        EnumConsoleLogColors.INFO
       );
       resUser = (await userServices.getDataFS().where("id", "==", userId).get())
         .docs[0];

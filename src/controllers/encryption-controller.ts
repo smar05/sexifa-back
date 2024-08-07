@@ -17,7 +17,7 @@ class EncryptionController {
     next: NextFunction
   ): void {
     if (
-      req.url.includes("/api/epayco-trans/confirmacion") &&
+      req.url.includes(`/v1-0-0/api/epayco-trans/confirmacion`) &&
       req.method === "POST"
     )
       return next();
