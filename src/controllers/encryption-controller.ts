@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import encryptionService from "../services/encryption.service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class EncryptionController {
   constructor() {
-    console.log(
-      "🚀 ~ file: encryption-controller.ts ~ EncryptionController ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: encryption-controller.ts ~ EncryptionController ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
   }
 

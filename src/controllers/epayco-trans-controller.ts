@@ -27,10 +27,14 @@ import { Iorders } from "../interfaces/i-orders";
 import { StatusOrdersEnum } from "../enums/status-orders-enum";
 import ordersServices from "../services/orders-service";
 import epaycoSdkService from "../services/epayco-sdk.service";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 export class EpaycoTransController {
   constructor() {
-    console.log("🚀 ~ EpaycoTransController ~ constructor: Inicia");
+    Helpers.consoleLog(
+      "~ EpaycoTransController ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
+    );
   }
 
   /**
@@ -47,8 +51,10 @@ export class EpaycoTransController {
     res: Response,
     next: any
   ): Promise<void> {
-    console.log("🚀 ~ EpaycoTransController ~ confirmTransaccion: Inicia");
-
+    Helpers.consoleLog(
+      "~ EpaycoTransController ~ confirmTransaccion: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     if (!req.query) {
       return res.status(400).json({ error: "No hay datos en el query" }) as any;
     }
@@ -122,7 +128,7 @@ export class EpaycoTransController {
     if (
       !(validoAceptado || validoRechazado || validoPendiente || validoFallida)
     ) {
-      console.error("Transaccion invalida");
+      Helpers.consoleLog("Transaccion invalida", EnumConsoleLogColors.ERROR);
       return res.status(400).json({ error: "Transaccion invalida" }) as any;
     }
 
@@ -344,7 +350,7 @@ export class EpaycoTransController {
         user_view: false,
       };
     } else {
-      console.error("Transaccion invalida");
+      Helpers.consoleLog("Transaccion invalida", EnumConsoleLogColors.INFO);
       return res.status(400).json({ error: "Transaccion invalida" }) as any;
     }
 

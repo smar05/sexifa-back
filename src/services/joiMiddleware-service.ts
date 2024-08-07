@@ -1,4 +1,6 @@
 import Joi from "joi";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 export class JoiMiddlewareService {
   /**
@@ -14,8 +16,9 @@ export class JoiMiddlewareService {
   static validarDatosObligatorios(datosAValidar: {
     [key: string]: any;
   }): Joi.ValidationError | undefined {
-    console.log(
-      "🚀 ~ file: joiMiddleware-service.ts ~ JoiMiddlewareService ~ validarDatosObligatorios: Inicia"
+    Helpers.consoleLog(
+      "~ file: joiMiddleware-service.ts ~ JoiMiddlewareService ~ validarDatosObligatorios: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     let camposAValidar: any = {};
@@ -48,8 +51,9 @@ export class JoiMiddlewareService {
     camposAValidar: object | any,
     datosAValidar: { [key: string]: any }
   ): Joi.ValidationError | undefined {
-    console.log(
-      "🚀 ~ file: joiMiddleware-service.ts ~ JoiMiddlewareService ~ validarDatos: Inicia"
+    Helpers.consoleLog(
+      "~ file: joiMiddleware-service.ts ~ JoiMiddlewareService ~ validarDatos: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     // Define el esquema de validación con Joi

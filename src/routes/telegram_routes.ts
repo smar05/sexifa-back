@@ -1,12 +1,15 @@
 import { Router } from "express";
 import telegramController from "../controllers/telegram_controller";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class TelegramRoutes {
   private router: Router = Router();
 
   constructor() {
-    console.log(
-      "🚀 ~ file: telegram_routes.ts0 ~ TelegramRoutes ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_routes.ts0 ~ TelegramRoutes ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
     this.config();
   }
@@ -17,8 +20,9 @@ class TelegramRoutes {
    * @memberof TelegramRoutes
    */
   public config(): void {
-    console.log(
-      "🚀 ~ file: telegram_routes.ts ~ TelegramRoutes ~ config: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_routes.ts ~ TelegramRoutes ~ config: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     // GET
@@ -42,8 +46,9 @@ class TelegramRoutes {
 
   // Getters y Setters
   public getRouter(): Router {
-    console.log(
-      "🚀 ~ file: telegram_routes.ts ~ TelegramRoutes ~ getRouter: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_routes.ts ~ TelegramRoutes ~ getRouter: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.router;
   }

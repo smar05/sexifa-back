@@ -1,17 +1,25 @@
 import { Router } from "express";
 import epaycoTransController from "../controllers/epayco-trans-controller";
 import telegramController from "../controllers/telegram_controller";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class EpaycoTransRoutes {
   private router: Router = Router();
 
   constructor() {
-    console.log("🚀 ~ EpaycoTransRoutes ~ constructor: Inicia");
+    Helpers.consoleLog(
+      "~ EpaycoTransRoutes ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     this.config();
   }
 
   public config(): void {
-    console.log("🚀 ~ EpaycoTransRoutes ~ config: Inicia");
+    Helpers.consoleLog(
+      "~ EpaycoTransRoutes ~ config: Inicia",
+      EnumConsoleLogColors.INFO
+    );
 
     // POST
     this.router.post(
@@ -23,7 +31,10 @@ class EpaycoTransRoutes {
 
   // Getters y Setters
   public getRouter(): Router {
-    console.log("🚀 ~ EpaycoTransRoutes ~ getRouter: Inicia");
+    Helpers.consoleLog(
+      "~ EpaycoTransRoutes ~ getRouter: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     return this.router;
   }
 }

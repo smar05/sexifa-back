@@ -1,6 +1,8 @@
 import { DocumentData, DocumentReference } from "firebase-admin/firestore";
 import { environment } from "../environment";
 import { FireStorageService } from "./firestorage-service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 export enum EnumBusinessParamsKeys {
   PUBLIC_KEY = "public_key",
@@ -14,8 +16,9 @@ class BusinessParamsService {
   private fireStorageService: FireStorageService;
 
   constructor() {
-    console.log(
-      "🚀 ~ file: business-params.service.ts ~ BusinessParamsService ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: business-params.service.ts ~ BusinessParamsService ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     this.fireStorageService = new FireStorageService();
@@ -32,9 +35,10 @@ class BusinessParamsService {
   public getItemFS(
     doc: EnumBusinessParamsKeys
   ): DocumentReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: business-params.service.ts ~ BusinessParamsService ~ getItemFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: business-params.service.ts ~ BusinessParamsService ~ getItemFS: Inicia Doc: " +
+        doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getItem(this.urlBusinessParams, doc);
   }

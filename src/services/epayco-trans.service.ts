@@ -16,13 +16,18 @@ import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "./back-logs-service";
 import { EnumEpaycoResponse } from "../enums/enum-epayco-response";
 import encryptionService from "./encryption.service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class EpaycoTransService {
   private urlEpaycoTrans: string = environment.urlCollections.epayco_trans;
   private fireStorageService: FireStorageService;
 
   constructor() {
-    console.log("🚀 ~ EpaycoTransService ~ constructor: Inicia");
+    Helpers.consoleLog(
+      "~ EpaycoTransService ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     this.fireStorageService = new FireStorageService();
   }
 
@@ -34,8 +39,9 @@ class EpaycoTransService {
    * @memberof EpaycoTransService
    */
   public getDataFS(): CollectionReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: models-service.ts ~ ModelsService ~ getDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: models-service.ts ~ ModelsService ~ getDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getData(this.urlEpaycoTrans);
   }
@@ -48,7 +54,10 @@ class EpaycoTransService {
    * @memberof EpaycoTransService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
-    console.log(`🚀 ~ EpaycoTransService ~ getItemFS: Inicia Doc: ${doc}`);
+    Helpers.consoleLog(
+      `~ EpaycoTransService ~ getItemFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
+    );
     return this.fireStorageService.getItem(this.urlEpaycoTrans, doc);
   }
 
@@ -60,7 +69,10 @@ class EpaycoTransService {
    * @memberof EpaycoTransService
    */
   public postDataFS(data: IEpaycoTransSend): Promise<any> {
-    console.log("🚀 ~ EpaycoTransService ~ postDataFS: Inicia");
+    Helpers.consoleLog(
+      "~ EpaycoTransService ~ postDataFS: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     return this.fireStorageService.post(this.urlEpaycoTrans, data);
   }
 
@@ -73,7 +85,10 @@ class EpaycoTransService {
    * @memberof EpaycoTransService
    */
   public patchDataFS(doc: string, data: IEpaycoTransSend): Promise<any> {
-    console.log(`🚀 ~ EpaycoTransService ~ patchDataFS: Inicia Doc: ${doc}`);
+    Helpers.consoleLog(
+      `~ EpaycoTransService ~ patchDataFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
+    );
     return this.fireStorageService.patch(this.urlEpaycoTrans, doc, data);
   }
 
@@ -85,7 +100,10 @@ class EpaycoTransService {
    * @memberof EpaycoTransService
    */
   public deleteDataFS(doc: string): Promise<any> {
-    console.log(`🚀 ~ EpaycoTransService ~ deleteDataFS: Inicia Doc: ${doc}`);
+    Helpers.consoleLog(
+      `~ EpaycoTransService ~ deleteDataFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
+    );
     return this.fireStorageService.delete(this.urlEpaycoTrans, doc);
   }
 

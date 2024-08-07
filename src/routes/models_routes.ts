@@ -1,18 +1,24 @@
 import { Router } from "express";
 import modelsController from "../controllers/models_controller";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class ModelsRoutes {
   private router: Router = Router();
 
   constructor() {
-    console.log(
-      "🚀 ~ file: models_routes.ts ~ ModelsRoutes ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: models_routes.ts ~ ModelsRoutes ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
     this.config();
   }
 
   public config(): void {
-    console.log("🚀 ~ file: models_routes.ts ~ ModelsRoutes ~ config: Inicia");
+    Helpers.consoleLog(
+      "~ file: models_routes.ts ~ ModelsRoutes ~ config: Inicia",
+      EnumConsoleLogColors.INFO
+    );
 
     // GET
     this.router.get(
@@ -23,8 +29,9 @@ class ModelsRoutes {
 
   // Getters y Setters
   public getRouter(): Router {
-    console.log(
-      "🚀 ~ file: models_routes.ts ~ ModelsRoutes ~ getRouter: Inicia"
+    Helpers.consoleLog(
+      "~ file: models_routes.ts ~ ModelsRoutes ~ getRouter: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.router;
   }

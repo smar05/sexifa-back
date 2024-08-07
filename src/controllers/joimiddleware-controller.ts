@@ -1,11 +1,14 @@
 import { NextFunction, Response, Request } from "express";
 import { JoiMiddlewareService } from "../services/joiMiddleware-service";
 import Joi from "joi";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class JoiMiddlewareController {
   constructor() {
-    console.log(
-      "🚀 ~ file: joimiddleware-controller.ts ~ JoiMiddlewareController ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: joimiddleware-controller.ts ~ JoiMiddlewareController ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
   }
 
@@ -41,9 +44,10 @@ class JoiMiddlewareController {
       JoiMiddlewareService.validarDatosObligatorios({ auth, date });
 
     if (resultadoValidacionError) {
-      console.log(
-        "🚀 ~ JoiMiddlewareController ~ validacionDatosObligatorios ~ resultadoValidacionError: Error en la validacion con Joi: ",
-        resultadoValidacionError
+      Helpers.consoleLog(
+        "~ JoiMiddlewareController ~ validacionDatosObligatorios ~ resultadoValidacionError: Error en la validacion con Joi: ",
+        EnumConsoleLogColors.ERROR,
+        [resultadoValidacionError]
       );
       // Si hay errores de validación, enviar una respuesta de error
       return res.status(400).json({

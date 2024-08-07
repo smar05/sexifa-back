@@ -3,11 +3,14 @@ import { JoiMiddlewareService } from "../services/joiMiddleware-service";
 import { Request, Response } from "express";
 import modelsServices from "../services/models-service";
 import { IpriceModel } from "../interfaces/i-price-model";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class ModelsController {
   constructor() {
-    console.log(
-      "🚀 ~ file: models_controller.ts ~ ModelsController ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: models_controller.ts ~ ModelsController ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
   }
 
@@ -23,8 +26,9 @@ class ModelsController {
     req: Request,
     res: Response
   ): Promise<void> {
-    console.log(
-      "🚀 ~ file: models_controller.ts ~ ModelsController ~ calcularPrecioSubscripcion: Inicia"
+    Helpers.consoleLog(
+      "~ file: models_controller.ts ~ ModelsController ~ calcularPrecioSubscripcion: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     // Validacion de datos
@@ -34,9 +38,10 @@ class ModelsController {
     );
 
     if (resultadoValidacionError) {
-      console.log(
-        "🚀 ~ file: models_controller.ts ~ ModelsController ~ calcularPrecioSubscripcion: Error en la validacion con Joi: ",
-        resultadoValidacionError
+      Helpers.consoleLog(
+        "file: models_controller.ts ~ ModelsController ~ calcularPrecioSubscripcion: Error en la validacion con Joi: ",
+        EnumConsoleLogColors.ERROR,
+        [resultadoValidacionError]
       );
       // Si hay errores de validación, enviar una respuesta de error
       return res

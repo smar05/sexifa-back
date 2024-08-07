@@ -13,14 +13,17 @@ import {
 } from "../interfaces/i-price-model";
 import { Isubscriptions } from "../interfaces/i-subscriptions";
 import backLogsServices from "./back-logs-service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class ModelsService {
   private urlModels: string = environment.urlCollections.models;
   private fireStorageService: FireStorageService;
 
   constructor() {
-    console.log(
-      "🚀 ~ file: models-service.ts ~ ModelsService ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: models-service.ts ~ ModelsService ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
     this.fireStorageService = new FireStorageService();
   }
@@ -33,8 +36,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public getDataFS(): CollectionReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: models-service.ts ~ ModelsService ~ getDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: models-service.ts ~ ModelsService ~ getDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getData(this.urlModels);
   }
@@ -47,8 +51,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
-    console.log(
-      `🚀 ~ file: models-service.ts ~ ModelsService ~ getItemFS: Inicia Doc: ${doc}`
+    Helpers.consoleLog(
+      `~ file: models-service.ts ~ ModelsService ~ getItemFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getItem(this.urlModels, doc);
   }
@@ -61,8 +66,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public postDataFS(data: Imodels): Promise<any> {
-    console.log(
-      "🚀 ~ file: models-service.ts ~ ModelsService ~ postDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: models-service.ts ~ ModelsService ~ postDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.post(this.urlModels, data);
   }
@@ -76,8 +82,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public patchDataFS(doc: string, data: Imodels): Promise<any> {
-    console.log(
-      `🚀 ~ file: models-service.ts ~ ModelsService ~ patchDataFS: Inicia Doc: ${doc}`
+    Helpers.consoleLog(
+      `~ file: models-service.ts ~ ModelsService ~ patchDataFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.patch(this.urlModels, doc, data);
   }
@@ -90,8 +97,9 @@ class ModelsService {
    * @memberof ModelsService
    */
   public deleteDataFS(doc: string): Promise<any> {
-    console.log(
-      `🚀 ~ file: models-service.ts ~ ModelsService ~ deleteDataFS: Inicia Doc: ${doc}`
+    Helpers.consoleLog(
+      `~ file: models-service.ts ~ ModelsService ~ deleteDataFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.delete(this.urlModels, doc);
   }

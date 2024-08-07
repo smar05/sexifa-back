@@ -6,14 +6,17 @@ import {
 import { environment } from "../environment";
 import { Iorders } from "../interfaces/i-orders";
 import { FireStorageService } from "./firestorage-service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class OrdersService {
   private urlOrders: string = environment.urlCollections.orders;
   private fireStorageService: FireStorageService;
 
   constructor() {
-    console.log(
-      "🚀 ~ file: orders-service.ts ~ OrdersService ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: orders-service.ts ~ OrdersService ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     this.fireStorageService = new FireStorageService();
@@ -27,8 +30,9 @@ class OrdersService {
    * @memberof OrdersService
    */
   public getDataFS(): CollectionReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: orders-service.ts ~ OrdersService ~ getDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: orders-service.ts ~ OrdersService ~ getDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getData(this.urlOrders);
   }
@@ -41,9 +45,10 @@ class OrdersService {
    * @memberof OrdersService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: orders-service.ts ~ OrdersService ~ getItemFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: orders-service.ts ~ OrdersService ~ getItemFS: Inicia Doc: " +
+        doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getItem(this.urlOrders, doc);
   }
@@ -56,8 +61,9 @@ class OrdersService {
    * @memberof OrdersService
    */
   public postDataFS(data: Iorders): Promise<any> {
-    console.log(
-      "🚀 ~ file: orders-service.ts ~ OrdersService ~ postDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: orders-service.ts ~ OrdersService ~ postDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.post(this.urlOrders, data);
   }
@@ -71,9 +77,10 @@ class OrdersService {
    * @memberof OrdersService
    */
   public patchDataFS(doc: string, data: Iorders): Promise<any> {
-    console.log(
-      "🚀 ~ file: orders-service.ts ~ OrdersService ~ patchDataFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: orders-service.ts ~ OrdersService ~ patchDataFS: Inicia Doc: " +
+        doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.patch(this.urlOrders, doc, data);
   }
@@ -86,9 +93,10 @@ class OrdersService {
    * @memberof OrdersService
    */
   public deleteDataFS(doc: string): Promise<any> {
-    console.log(
-      "🚀 ~ file: orders-service.ts ~ OrdersService ~ deleteDataFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: orders-service.ts ~ OrdersService ~ deleteDataFS: Inicia Doc: " +
+        doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.delete(this.urlOrders, doc);
   }

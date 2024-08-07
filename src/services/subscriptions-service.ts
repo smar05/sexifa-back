@@ -6,14 +6,17 @@ import {
 import { environment } from "../environment";
 import { Isubscriptions } from "../interfaces/i-subscriptions";
 import { FireStorageService } from "./firestorage-service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class SubscriptionsService {
   private urlSubscriptions: string = environment.urlCollections.subscriptions;
   private fireStorageService: FireStorageService;
 
   constructor() {
-    console.log(
-      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: subscriptions-service.ts ~ SubscriptionsService ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
     this.fireStorageService = new FireStorageService();
   }
@@ -26,8 +29,9 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public getDataFS(): CollectionReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ getDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: subscriptions-service.ts ~ SubscriptionsService ~ getDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getData(this.urlSubscriptions);
   }
@@ -40,9 +44,10 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ getItemFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: subscriptions-service.ts ~ SubscriptionsService ~ getItemFS: Inicia Doc: " +
+        doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getItem(this.urlSubscriptions, doc);
   }
@@ -55,8 +60,9 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public postDataFS(data: Isubscriptions): Promise<any> {
-    console.log(
-      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ postDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: subscriptions-service.ts ~ SubscriptionsService ~ postDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.post(this.urlSubscriptions, data);
   }
@@ -70,9 +76,10 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public patchDataFS(doc: string, data: Isubscriptions): Promise<any> {
-    console.log(
-      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ patchDataFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: subscriptions-service.ts ~ SubscriptionsService ~ patchDataFS: Inicia Doc: " +
+        doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.patch(this.urlSubscriptions, doc, data);
   }
@@ -85,9 +92,10 @@ class SubscriptionsService {
    * @memberof SubscriptionsService
    */
   public deleteDataFS(doc: string): Promise<any> {
-    console.log(
-      "🚀 ~ file: subscriptions-service.ts ~ SubscriptionsService ~ deleteDataFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: subscriptions-service.ts ~ SubscriptionsService ~ deleteDataFS: Inicia Doc: " +
+        doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.delete(this.urlSubscriptions, doc);
   }

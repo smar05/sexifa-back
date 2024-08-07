@@ -7,14 +7,17 @@ import { environment } from "../environment";
 import { FireStorageService } from "./firestorage-service";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import { variablesGlobales } from "../variables-globales";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class BackLogsService {
   private urlBackLogs: string = environment.urlCollections.back_logs;
   private fireStorageService: FireStorageService;
 
   constructor() {
-    console.log(
-      "🚀 ~ file: back-logs-service.ts: ~ BackLogsService ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: back-logs-service.ts: ~ BackLogsService ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
     this.fireStorageService = new FireStorageService();
   }
@@ -27,8 +30,9 @@ class BackLogsService {
    * @memberof BackLogsService
    */
   public getDataFS(): CollectionReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: back-logs-service.ts: ~ BackLogsService ~ getDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: back-logs-service.ts: ~ BackLogsService ~ getDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getData(this.urlBackLogs);
   }
@@ -41,8 +45,9 @@ class BackLogsService {
    * @memberof BackLogsService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
-    console.log(
-      `🚀 ~ file:back-logs-service.ts: ~ BackLogsService ~ getItemFS: Inicia Doc: ${doc}`
+    Helpers.consoleLog(
+      `~ file:back-logs-service.ts: ~ BackLogsService ~ getItemFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getItem(this.urlBackLogs, doc);
   }
@@ -55,8 +60,9 @@ class BackLogsService {
    * @memberof BackLogsService
    */
   public postDataFS(data: IBackLogs): Promise<any> {
-    console.log(
-      "🚀 ~ file: back-logs-service.ts: ~ BackLogsService ~ postDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: back-logs-service.ts: ~ BackLogsService ~ postDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.post(this.urlBackLogs, data);
   }
@@ -70,8 +76,9 @@ class BackLogsService {
    * @memberof BackLogsService
    */
   public patchDataFS(doc: string, data: IBackLogs): Promise<any> {
-    console.log(
-      `🚀 ~ file: back-logs-service.ts: ~ BackLogsService ~ patchDataFS: Inicia Doc: ${doc}`
+    Helpers.consoleLog(
+      `~ file: back-logs-service.ts: ~ BackLogsService ~ patchDataFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.patch(this.urlBackLogs, doc, data);
   }
@@ -84,8 +91,9 @@ class BackLogsService {
    * @memberof BackLogsService
    */
   public deleteDataFS(doc: string): Promise<any> {
-    console.log(
-      `🚀 ~ file: back-logs-service.ts: ~ BackLogsService ~ deleteDataFS: Inicia Doc: ${doc}`
+    Helpers.consoleLog(
+      `~ file: back-logs-service.ts: ~ BackLogsService ~ deleteDataFS: Inicia Doc: ${doc}`,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.delete(this.urlBackLogs, doc);
   }
@@ -98,7 +106,7 @@ class BackLogsService {
    * @memberof BackLogsService
    */
   public catchProcessError(consoleLog: string, log: string): void {
-    console.error(consoleLog);
+    Helpers.consoleLog(consoleLog, EnumConsoleLogColors.ERROR);
 
     let date: string = variablesGlobales.date
       ? variablesGlobales.date.toISOString()
@@ -113,7 +121,7 @@ class BackLogsService {
       .postDataFS(data)
       .then((res) => {})
       .catch((err) => {
-        console.log("🚀 ~ Server ~ err:", err);
+        Helpers.consoleLog("~ Server ~ err:", EnumConsoleLogColors.INFO, [err]);
         throw err;
       });
   }

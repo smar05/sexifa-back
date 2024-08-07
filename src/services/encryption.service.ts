@@ -1,11 +1,16 @@
 import { environment } from "../environment";
 import forge from "node-forge";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class EncryptionService {
   private privateKey: forge.pki.rsa.PrivateKey = null as any;
 
   constructor() {
-    console.log("🚀 ~ EncryptionService ~ constructor: Inicia");
+    Helpers.consoleLog(
+      "~ EncryptionService ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     this.privateKey = forge.pki.privateKeyFromPem(environment.private_key);
   }
 
@@ -17,8 +22,10 @@ class EncryptionService {
    * @memberof EncryptionService
    */
   public decryptData(data: string): string {
-    console.log("🚀 ~ EncryptionService ~ decryptData ~ data:", data);
-    console.log("🚀 ~ EncryptionService ~ decryptData: Inicia");
+    Helpers.consoleLog(
+      "~ EncryptionService ~ decryptData: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     const encryptedData: forge.Bytes = forge.util.decode64(data);
     const decryptedData: forge.Bytes = this.privateKey.decrypt(
       encryptedData,
@@ -34,7 +41,10 @@ class EncryptionService {
   public decryptDataJson(data: { [key: string]: string }): {
     [key: string]: string;
   } {
-    console.log("🚀 ~ EncryptionService ~ decryptDataJson: Inicia");
+    Helpers.consoleLog(
+      "~ EncryptionService ~ decryptDataJson: Inicia",
+      EnumConsoleLogColors.INFO
+    );
 
     for (const key of Object.keys(data)) {
       if (data[key] == "undefined" || data[key] == "null" || data[key] == "") {

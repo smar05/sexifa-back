@@ -13,17 +13,19 @@ import { Iuser } from "../interfaces/i-user";
 import { DocumentSnapshot } from "firebase-admin/firestore";
 import { JoiMiddlewareService } from "../services/joiMiddleware-service";
 import Joi from "joi";
-import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "../services/back-logs-service";
 import { variablesGlobales } from "../variables-globales";
 import businessParamsService, {
   EnumBusinessParamsKeys,
 } from "../services/business-params.service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class TelegramController {
   constructor() {
-    console.log(
-      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_controller.ts ~ TelegramController ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
   }
 
@@ -36,8 +38,9 @@ class TelegramController {
    * @memberof TelegramController
    */
   public async enviarLink(req: Request, res: Response): Promise<void> {
-    console.log(
-      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     // Validacion de datos
@@ -49,9 +52,10 @@ class TelegramController {
     );
 
     if (resultadoValidacionError) {
-      console.log(
-        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: Error en la validacion con Joi: ",
-        resultadoValidacionError
+      Helpers.consoleLog(
+        "~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: Error en la validacion con Joi: ",
+        EnumConsoleLogColors.ERROR,
+        [resultadoValidacionError]
       );
       // Si hay errores de validación, enviar una respuesta de error
       return res
@@ -84,8 +88,9 @@ class TelegramController {
 
     // Si no esta en estado pagada
     if (order.status != StatusOrdersEnum.PAGADO) {
-      console.log(
-        `🚀 ~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: La orden ${order.id} no ha sido pagada`
+      Helpers.consoleLog(
+        `~ file: telegram_controller.ts ~ TelegramController ~ enviarLink: La orden ${order.id} no ha sido pagada`,
+        EnumConsoleLogColors.ERROR
       );
       res.status(500).json({
         mensaje: "La orden no ha sido pagada",
@@ -292,10 +297,10 @@ class TelegramController {
    * @memberof TelegramController
    */
   public async quitarAcceso(req: Request, res: Response): Promise<void> {
-    console.log(
-      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ quitarAcceso: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_controller.ts ~ TelegramController ~ quitarAcceso: Inicia",
+      EnumConsoleLogColors.INFO
     );
-
     // Validar correo admin
     let resp: DocumentSnapshot = null as any;
 
@@ -337,9 +342,10 @@ class TelegramController {
     );
 
     if (resultadoValidacionError) {
-      console.log(
-        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ quitarAcceso: Error en la validacion con Joi: ",
-        resultadoValidacionError
+      Helpers.consoleLog(
+        "~ file: telegram_controller.ts ~ TelegramController ~ quitarAcceso: Error en la validacion con Joi: ",
+        EnumConsoleLogColors.ERROR,
+        [resultadoValidacionError]
       );
       // Si hay errores de validación, enviar una respuesta de error
       return res
@@ -478,10 +484,10 @@ class TelegramController {
    * @memberof TelegramController
    */
   public async comunicarBotCliente(req: Request, res: Response): Promise<void> {
-    console.log(
-      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ comunicarBotCliente: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_controller.ts ~ TelegramController ~ comunicarBotCliente: Inicia",
+      EnumConsoleLogColors.INFO
     );
-
     // Validacion de datos
     let { fromId, url } = req.query;
     let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
@@ -493,9 +499,10 @@ class TelegramController {
     );
 
     if (resultadoValidacionError) {
-      console.log(
-        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ comunicarBotCliente: Error en la validacion con Joi: ",
-        resultadoValidacionError
+      Helpers.consoleLog(
+        "~ file: telegram_controller.ts ~ TelegramController ~ comunicarBotCliente: Error en la validacion con Joi: ",
+        EnumConsoleLogColors.ERROR,
+        [resultadoValidacionError]
       );
       // Si hay errores de validación, enviar una respuesta de error
       return res
@@ -553,10 +560,10 @@ class TelegramController {
    * @memberof TelegramController
    */
   public async esMiembroDelGrupo(req: Request, res: Response): Promise<void> {
-    console.log(
-      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ esMiembroDelGrupo: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_controller.ts ~ TelegramController ~ esMiembroDelGrupo: Inicia",
+      EnumConsoleLogColors.INFO
     );
-
     // Validacion de datos
     let resultadoValidacionError: any = JoiMiddlewareService.validarDatos(
       {
@@ -567,9 +574,10 @@ class TelegramController {
     );
 
     if (resultadoValidacionError) {
-      console.log(
-        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ esMiembroDelGrupo: Error en la validacion con Joi: ",
-        resultadoValidacionError
+      Helpers.consoleLog(
+        "~ file: telegram_controller.ts ~ TelegramController ~ esMiembroDelGrupo: Error en la validacion con Joi: ",
+        EnumConsoleLogColors.ERROR,
+        [resultadoValidacionError]
       );
       // Si hay errores de validación, enviar una respuesta de error
       return res
@@ -627,8 +635,9 @@ class TelegramController {
    * @memberof TelegramController
    */
   public async botEsAdminDelGrupo(req: Request, res: Response): Promise<void> {
-    console.log(
-      "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ esMiembroDelGrupo: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_controller.ts ~ TelegramController ~ esMiembroDelGrupo: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     // Validacion de datos
@@ -640,9 +649,10 @@ class TelegramController {
     );
 
     if (resultadoValidacionError) {
-      console.log(
-        "🚀 ~ file: telegram_controller.ts ~ TelegramController ~ botEsAdminDelGrupo: Error en la validacion con Joi: ",
-        resultadoValidacionError
+      Helpers.consoleLog(
+        "~ file: telegram_controller.ts ~ TelegramController ~ botEsAdminDelGrupo: Error en la validacion con Joi: ",
+        EnumConsoleLogColors.ERROR,
+        [resultadoValidacionError]
       );
       // Si hay errores de validación, enviar una respuesta de error
       return res

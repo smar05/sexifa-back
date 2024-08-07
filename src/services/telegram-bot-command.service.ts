@@ -7,6 +7,8 @@ import {
 } from "telegraf/typings/core/types/typegram";
 import telegramServices from "./telegram_services";
 import backLogsServices from "./back-logs-service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 /**
  * Comandos con el bot de telegram
@@ -15,7 +17,7 @@ import backLogsServices from "./back-logs-service";
  * @param {Telegraf} bot
  */
 export function setupCommands(bot: Telegraf): void {
-  console.log("🚀 ~ setupCommands: Inicia");
+  Helpers.consoleLog("~ setupCommands: Inicia", EnumConsoleLogColors.INFO);
 
   /**
    * Obtener el id de un chat
@@ -24,13 +26,20 @@ export function setupCommands(bot: Telegraf): void {
    * @return {*}
    */
   function miId(ctx: Context): void {
-    console.log("🚀 ~ miId: Inicia");
+    Helpers.consoleLog("~ miId: Inicia", EnumConsoleLogColors.INFO);
     const userId: number = ctx.from?.id || NaN;
 
-    console.log("🚀 ~ miId ~ userId: Solicitud del id ", userId);
+    Helpers.consoleLog(
+      "~ miId ~ userId: Solicitud del id " + userId,
+      EnumConsoleLogColors.INFO
+    );
 
     if (!userId) {
-      console.log("🚀 ~ miId ~ userId: No se ha obtenido el id");
+      Helpers.consoleLog(
+        "~ miId ~ userId: No se ha obtenido el id",
+        EnumConsoleLogColors.ERROR
+      );
+
       ctx.reply(`Ha ocurrido un error`);
       return;
     }
@@ -45,7 +54,7 @@ export function setupCommands(bot: Telegraf): void {
    * @return {*}  {Promise<void>}
    */
   async function newChatMemberBot(ctx: any): Promise<void> {
-    console.log("🚀 ~ newChatMembers ~ Inicia");
+    Helpers.consoleLog("~ newChatMembers ~ Inicia", EnumConsoleLogColors.INFO);
 
     const newMembers: User[] = ctx.message?.new_chat_members;
     const groupId: number = ctx.chat?.id;
@@ -68,20 +77,25 @@ export function setupCommands(bot: Telegraf): void {
     );
 
     if (!botAdded) {
-      console.log(
-        "🚀 ~ newChatMembers ~ botAdded: No se ha añadido el bot al grupo"
+      Helpers.consoleLog(
+        "~ newChatMembers ~ botAdded: No se ha añadido el bot al grupo",
+        EnumConsoleLogColors.ERROR
       );
       return;
     }
 
     if (!groupId) {
-      console.log(
-        "🚀 ~ newChatMembers ~ groupId: No se ha obtenido el id del grupo"
+      Helpers.consoleLog(
+        "~ newChatMembers ~ groupId: No se ha obtenido el id del grupo",
+        EnumConsoleLogColors.ERROR
       );
       ctx.reply(`Ha ocurrido un error obteniendo el id del grupo`);
       return;
     }
-    console.log(`🚀 ~ newChatMembers ~ groupId: ${groupId}`);
+    Helpers.consoleLog(
+      `~ newChatMembers ~ groupId: ${groupId}`,
+      EnumConsoleLogColors.INFO
+    );
 
     // Datos del grupo
     let groupData: ChatFromGetChat = null as any;
@@ -125,8 +139,9 @@ export function setupCommands(bot: Telegraf): void {
       (null as any);
 
     if (!adminUser) {
-      console.log(
-        "🚀 ~ newChatMembers ~ adminUser: No se ha encontrado un administrador del grupo"
+      Helpers.consoleLog(
+        "~ newChatMembers ~ adminUser: No se ha encontrado un administrador del grupo",
+        EnumConsoleLogColors.ERROR
       );
       ctx.reply(`Ha ocurrido un error encontrando al administrador del grupo`);
       return;
@@ -140,7 +155,10 @@ export function setupCommands(bot: Telegraf): void {
         groupData.type === "group"
       )
     ) {
-      console.log("🚀 ~ newChatMembers ~ groupData.type: No es un grupo");
+      Helpers.consoleLog(
+        `~ newChatMembers ~ ${(groupData as any).type}: No es un grupo`,
+        EnumConsoleLogColors.ERROR
+      );
 
       await telegramServices.enviarMensajeBotAUsuario(
         adminUser.user.id,

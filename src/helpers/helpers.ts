@@ -1,3 +1,6 @@
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
+import colors from "colors/safe";
+
 export class Helpers {
   /**
    * Incrementar la fecha x cantidad de meses
@@ -58,5 +61,53 @@ export class Helpers {
     }
 
     return true;
+  }
+
+  /**
+   * Decoracion de los logs
+   *
+   * @static
+   * @param {string} text
+   * @param {EnumConsoleLogColors} [color=null as any]
+   * @memberof Helpers
+   */
+  static consoleLog(
+    text: string,
+    color: EnumConsoleLogColors = null as any,
+    optionalParams: any[] = []
+  ): void {
+    switch (color) {
+      case EnumConsoleLogColors.ERROR:
+        console.error(
+          `❌ ${colors.bgRed(EnumConsoleLogColors.ERROR + ":")} ${text}`,
+          ...optionalParams
+        );
+        break;
+
+      case EnumConsoleLogColors.INFO:
+        console.info(
+          `ℹ️ ${colors.bgCyan(EnumConsoleLogColors.INFO + ":")} ${text}`,
+          ...optionalParams
+        );
+        break;
+
+      case EnumConsoleLogColors.ALERT:
+        console.warn(
+          `⚠️ ${colors.bgYellow(EnumConsoleLogColors.ALERT + ":")} ${text}`,
+          ...optionalParams
+        );
+        break;
+
+      case EnumConsoleLogColors.SUCCESS:
+        console.log(
+          `✅ ${colors.bgGreen(EnumConsoleLogColors.SUCCESS + ":")} ${text}`,
+          ...optionalParams
+        );
+        break;
+
+      default:
+        console.log(text);
+        break;
+    }
   }
 }

@@ -1,19 +1,20 @@
 import { Telegraf } from "telegraf";
 import { environment } from "../environment";
-import { IBackLogs } from "../interfaces/i-back-logs";
 import backLogsServices from "./back-logs-service";
-import { variablesGlobales } from "../variables-globales";
 import {
   ChatMember,
   ChatMemberAdministrator,
   ChatMemberOwner,
   UserFromGetMe,
 } from "telegraf/typings/core/types/typegram";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class TelegramServices {
   constructor() {
-    console.log(
-      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: telegram_services.ts ~ TelegramServices ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
   }
 
@@ -29,9 +30,10 @@ class TelegramServices {
     userId: string | number,
     mensaje: string
   ): Promise<any> {
-    console.log(
-      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ enviarMensajeBotAUsuario: Inicia para el userId: " +
-        userId
+    Helpers.consoleLog(
+      "~ file: telegram_services.ts ~ TelegramServices ~ enviarMensajeBotAUsuario: Inicia para el userId: " +
+        userId,
+      EnumConsoleLogColors.INFO
     );
     const bot = new Telegraf(environment.tokenTelegraf);
 
@@ -59,9 +61,10 @@ class TelegramServices {
     chatId: string | number,
     userId: number
   ): Promise<void> {
-    console.log(
-      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ unbanChatMember: Inicia para el chatId: " +
-        chatId
+    Helpers.consoleLog(
+      "~ file: telegram_services.ts ~ TelegramServices ~ unbanChatMember: Inicia para el chatId: " +
+        chatId,
+      EnumConsoleLogColors.INFO
     );
     const bot = new Telegraf(environment.tokenTelegraf);
 
@@ -91,9 +94,10 @@ class TelegramServices {
     expireDate: number,
     memberLimit: number
   ): Promise<string> {
-    console.log(
-      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ createChatInviteLink: Inicia para el chatId: " +
-        chatId
+    Helpers.consoleLog(
+      "~ file: telegram_services.ts ~ TelegramServices ~ createChatInviteLink: Inicia para el chatId: " +
+        chatId,
+      EnumConsoleLogColors.INFO
     );
     const bot = new Telegraf(environment.tokenTelegraf);
 
@@ -118,9 +122,10 @@ class TelegramServices {
     userId: number,
     tiempoBaneado: number
   ): void {
-    console.log(
-      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ banChatMember: Inicia para el chatId: " +
-        chatId
+    Helpers.consoleLog(
+      "~ file: telegram_services.ts ~ TelegramServices ~ banChatMember: Inicia para el chatId: " +
+        chatId,
+      EnumConsoleLogColors.INFO
     );
 
     const bot = new Telegraf(environment.tokenTelegraf);
@@ -152,16 +157,21 @@ class TelegramServices {
     chatId: string | number,
     userId: number
   ): Promise<boolean> {
-    console.log(
-      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ esMiembroDelGrupo: Inicia para el chatId: " +
-        chatId
+    Helpers.consoleLog(
+      "~ file: telegram_services.ts ~ TelegramServices ~ esMiembroDelGrupo: Inicia para el chatId: " +
+        chatId,
+      EnumConsoleLogColors.INFO
     );
 
     const bot: Telegraf = new Telegraf(environment.tokenTelegraf);
 
     try {
       let member: ChatMember = await bot.telegram.getChatMember(chatId, userId);
-      console.log("🚀 ~ TelegramServices ~ member:", member);
+      Helpers.consoleLog(
+        "~ TelegramServices ~ member:",
+        EnumConsoleLogColors.INFO,
+        [member]
+      );
 
       return (
         member &&
@@ -187,9 +197,10 @@ class TelegramServices {
    * @memberof TelegramServices
    */
   public async botEsAdminDelGrupo(chatId: string | number): Promise<boolean> {
-    console.log(
-      "🚀 ~ file: telegram_services.ts ~ TelegramServices ~ botEsAdminDelGrupo: Inicia para el chatId: " +
-        chatId
+    Helpers.consoleLog(
+      "~ file: telegram_services.ts ~ TelegramServices ~ botEsAdminDelGrupo: Inicia para el chatId: " +
+        chatId,
+      EnumConsoleLogColors.INFO
     );
 
     const bot: Telegraf = new Telegraf(environment.tokenTelegraf);

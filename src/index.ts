@@ -18,6 +18,8 @@ import { setupCommands } from "./services/telegram-bot-command.service";
 import { Telegraf } from "telegraf";
 import joiMiddlewareController from "./controllers/joimiddleware-controller";
 import encryptionController from "./controllers/encryption-controller";
+import { Helpers } from "./helpers/helpers";
+import { EnumConsoleLogColors } from "./enums/enum-console-log-colors";
 
 class Server {
   private app: Application;
@@ -31,7 +33,10 @@ class Server {
   private bot: Telegraf = new Telegraf(environment.tokenTelegraf); // Inicializa Telegraf
 
   constructor() {
-    console.log("🚀 ~ file: index.ts ~ Server ~ constructor: Inicia");
+    Helpers.consoleLog(
+      "~ file: index.ts ~ Server ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     this.app = express();
     this.app.use(this.bodyParser.json());
 
@@ -46,20 +51,30 @@ class Server {
    * @memberof Server
    */
   public config(): void {
-    console.log("🚀 ~ file: index.ts ~ Server ~ config: Inicia");
+    Helpers.consoleLog(
+      "~ file: index.ts ~ Server ~ config: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     this.app.set("port", environment.port || 8080); // Se establece el puerto para el back
     this.app.use(morgan("dev")); // Para mostrar por consola las peticiones http
     this.app.use(express.json()); // Aceptar formato JSON
     this.app.use(express.urlencoded({ extended: false }));
 
     this.app.use((req: Request, res: Response, next: NextFunction) => {
-      console.log("🚀 ~ Server ~ this.app.use ~ req.host:", req.get("host"));
+      Helpers.consoleLog(
+        "~ Server ~ this.app.use ~ req.host: ",
+        EnumConsoleLogColors.INFO,
+        [req.get("host")]
+      );
 
       let endpointComandos: string = `${this.API}/${EnumUrlEnpoints.urlComandosTelegram}`;
 
       // Comandos desde telegram - no se usan cors
       if (req.url.startsWith(endpointComandos)) {
-        console.log("🚀 ~ Server ~ this.app.use ~ req: Endpoint de comandos");
+        Helpers.consoleLog(
+          "~ Server ~ this.app.use ~ req: Endpoint de comandos",
+          EnumConsoleLogColors.INFO
+        );
         // No aplicar CORS para el webhook de Telegram
         // Comandos configurados del bot
         setupCommands(this.bot);
@@ -69,8 +84,6 @@ class Server {
 
         next();
       } else {
-        console.log("🚀 ~ Server ~ Endpoint con cors");
-
         // Configura CORS
         cors(this.corsOptions)(req, res, (err: any) => {
           if (err) {
@@ -118,7 +131,10 @@ class Server {
    * @memberof Server
    */
   private verifyToken(req: Request | any, res: Response, next: any): void {
-    console.log("🚀 ~ file: index.ts ~ Server ~ verifyToken: Inicia");
+    Helpers.consoleLog(
+      "~ file: index.ts ~ Server ~ verifyToken: Inicia",
+      EnumConsoleLogColors.INFO
+    );
 
     if (
       req.url.includes("comunicar-bot-cliente") &&
@@ -144,8 +160,9 @@ class Server {
       .auth()
       .verifyIdToken(token)
       .then((decodedToken: DecodedIdToken) => {
-        console.log(
-          "🚀 ~ file: index.ts ~ Server ~ verifyToken: Token verificado"
+        Helpers.consoleLog(
+          "~ file: index.ts ~ Server ~ verifyToken: Token verificado",
+          EnumConsoleLogColors.INFO
         );
 
         if (!decodedToken.email_verified)
@@ -182,7 +199,10 @@ class Server {
     res: Response,
     next: any
   ): Promise<void> {
-    console.log("🚀 ~ file: index.ts: ~ Server ~ verifyUser: Inicia");
+    Helpers.consoleLog(
+      "~ file: index.ts: ~ Server ~ verifyUser: Inicia",
+      EnumConsoleLogColors.INFO
+    );
 
     if (
       req.url.includes("comunicar-bot-cliente") &&
@@ -197,9 +217,10 @@ class Server {
 
     let resUser: any = {};
     try {
-      console.error(
-        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Consulta del usuario " +
-          userId
+      Helpers.consoleLog(
+        "~ file: index.ts: ~ Server ~ verifyUser: Consulta del usuario " +
+          userId,
+        EnumConsoleLogColors.ERROR
       );
       resUser = (await userServices.getDataFS().where("id", "==", userId).get())
         .docs[0];
@@ -217,8 +238,9 @@ class Server {
     }
 
     if (!resUser) {
-      console.error(
-        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario no encontrado"
+      Helpers.consoleLog(
+        "~ file: index.ts: ~ Server ~ verifyUser: Usuario no encontrado",
+        EnumConsoleLogColors.ERROR
       );
       res.status(401).json({ error: "Usuario no encontrado" });
 
@@ -229,8 +251,9 @@ class Server {
     user.id = user.id;
 
     if (!user || !user.id || Object.keys(user).length === 0) {
-      console.error(
-        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario invalido"
+      Helpers.consoleLog(
+        "~ file: index.ts: ~ Server ~ verifyUser: Usuario invalido",
+        EnumConsoleLogColors.ERROR
       );
       res.status(401).json({ error: "Usuario invalido" });
       return;
@@ -238,8 +261,9 @@ class Server {
 
     // Usuario no activo
     if (user.status !== UserStatusEnum.ACTIVO) {
-      console.error(
-        "🚀 ~ file: index.ts: ~ Server ~ verifyUser: Usuario no activo"
+      Helpers.consoleLog(
+        "~ file: index.ts: ~ Server ~ verifyUser: Usuario no activo",
+        EnumConsoleLogColors.ERROR
       );
       res.status(401).json({ error: "Usuario no activo" });
       return;
@@ -263,8 +287,9 @@ class Server {
     res: Response,
     next: any
   ): Promise<void> {
-    console.log(
-      "🚀 ~ file: index.ts: ~ Server ~ asignarVariablesGlobales: Inicia"
+    Helpers.consoleLog(
+      "~ file: index.ts: ~ Server ~ asignarVariablesGlobales: Inicia",
+      EnumConsoleLogColors.INFO
     );
 
     let { date }: { date: string } = req.query;
@@ -287,7 +312,10 @@ class Server {
    * @memberof Server
    */
   public routes(): void {
-    console.log("🚀 ~ file: index.ts ~ Server ~ routes: Inicia");
+    Helpers.consoleLog(
+      "~ file: index.ts ~ Server ~ routes: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     this.app.use(
       `${this.API}/${EnumUrlEnpoints.urlTelegramApi}`,
       telegramRoutes
@@ -310,7 +338,10 @@ class Server {
    * @memberof Server
    */
   public start(): void {
-    console.log("🚀 ~ file: index.ts ~ Server ~ start: Inicia");
+    Helpers.consoleLog(
+      "~ file: index.ts ~ Server ~ start: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     this.app.listen(this.app.get("port"), () => {
       console.log("Server on port: " + this.app.get("port"));
     });

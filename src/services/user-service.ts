@@ -6,14 +6,17 @@ import {
 import { environment } from "../environment";
 import { Iuser } from "../interfaces/i-user";
 import { FireStorageService } from "./firestorage-service";
+import { Helpers } from "../helpers/helpers";
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 
 class UserService {
   private urlUsers: string = environment.urlCollections.users;
   private fireStorageService: FireStorageService;
 
   constructor() {
-    console.log(
-      "🚀 ~ file: user-service.ts ~ UserService ~ constructor: Inicia"
+    Helpers.consoleLog(
+      "~ file: user-service.ts ~ UserService ~ constructor: Inicia",
+      EnumConsoleLogColors.INFO
     );
     this.fireStorageService = new FireStorageService();
   }
@@ -26,7 +29,10 @@ class UserService {
    * @memberof UserService
    */
   public getDataFS(): CollectionReference<DocumentData> {
-    console.log("🚀 ~ file: user-service.ts ~ UserService ~ getDataFS: Inicia");
+    Helpers.consoleLog(
+      "~ file: user-service.ts ~ UserService ~ getDataFS: Inicia",
+      EnumConsoleLogColors.INFO
+    );
     return this.fireStorageService.getData(this.urlUsers);
   }
 
@@ -38,8 +44,9 @@ class UserService {
    * @memberof UserService
    */
   public getItemFS(doc: string): DocumentReference<DocumentData> {
-    console.log(
-      "🚀 ~ file: user-service.ts ~ UserService ~ getItemFS: Inicia Doc: " + doc
+    Helpers.consoleLog(
+      "~ file: user-service.ts ~ UserService ~ getItemFS: Inicia Doc: " + doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.getItem(this.urlUsers, doc);
   }
@@ -52,8 +59,9 @@ class UserService {
    * @memberof UserService
    */
   public postDataFS(data: Iuser): Promise<any> {
-    console.log(
-      "🚀 ~ file: user-service.ts ~ UserService ~ postDataFS: Inicia"
+    Helpers.consoleLog(
+      "~ file: user-service.ts ~ UserService ~ postDataFS: Inicia",
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.post(this.urlUsers, data);
   }
@@ -67,9 +75,9 @@ class UserService {
    * @memberof UserService
    */
   public patchDataFS(doc: string, data: Iuser): Promise<any> {
-    console.log(
-      "🚀 ~ file: user-service.ts ~ UserService ~ patchDataFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: user-service.ts ~ UserService ~ patchDataFS: Inicia Doc: " + doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.patch(this.urlUsers, doc, data);
   }
@@ -82,9 +90,10 @@ class UserService {
    * @memberof UserService
    */
   public deleteDataFS(doc: string): Promise<any> {
-    console.log(
-      "🚀 ~ file: user-service.ts ~ UserService ~ deleteDataFS: Inicia Doc: " +
-        doc
+    Helpers.consoleLog(
+      "~ file: user-service.ts ~ UserService ~ deleteDataFS: Inicia Doc: " +
+        doc,
+      EnumConsoleLogColors.INFO
     );
     return this.fireStorageService.delete(this.urlUsers, doc);
   }

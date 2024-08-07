@@ -1,4 +1,6 @@
+import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
 import { environment } from "../environment";
+import { Helpers } from "../helpers/helpers";
 import { IBackLogs } from "../interfaces/i-back-logs";
 import { IEpaycoTransRes } from "../interfaces/i-epayco-trans";
 import { variablesGlobales } from "../variables-globales";
@@ -28,9 +30,10 @@ class EpaycoSdkService {
     refPayco: string,
     dataRecibida: IEpaycoTransRes = null as any
   ): Promise<boolean> {
-    console.log(
-      "🚀 ~ EpaycoSdkService ~ validarTransaccion: Inicia para refPayco: " +
-        refPayco
+    Helpers.consoleLog(
+      "~ EpaycoSdkService ~ validarTransaccion: Inicia para refPayco: " +
+        refPayco,
+      EnumConsoleLogColors.INFO
     );
     let res = null;
 
