@@ -1,4 +1,5 @@
 export const environment = {
+  version: "1-0-0",
   port: 8080,
   frontUrl: "http://localhost:4200",
   cors: [

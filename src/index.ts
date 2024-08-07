@@ -23,7 +23,7 @@ import { EnumConsoleLogColors } from "./enums/enum-console-log-colors";
 
 class Server {
   private app: Application;
-  private API: string = "/v1-0-0/api";
+  private API: string = `/v${environment.version}/api`;
   private bodyParser = require("body-parser");
   private corsOptions: { [key: string]: any } = {
     origin: [environment.frontUrl, ...environment.cors], // o '*' para permitir cualquier origen

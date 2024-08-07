@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import encryptionService from "../services/encryption.service";
 import { Helpers } from "../helpers/helpers";
 import { EnumConsoleLogColors } from "../enums/enum-console-log-colors";
+import { environment } from "../environment";
 
 class EncryptionController {
   constructor() {
@@ -17,7 +18,9 @@ class EncryptionController {
     next: NextFunction
   ): void {
     if (
-      req.url.includes(`/v1-0-0/api/epayco-trans/confirmacion`) &&
+      req.url.includes(
+        `/v${environment.version}/api/epayco-trans/confirmacion`
+      ) &&
       req.method === "POST"
     )
       return next();
